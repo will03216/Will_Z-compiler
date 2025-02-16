@@ -7,11 +7,11 @@ namespace ast {
 class AddExpr : public Node
 {
 private:
-    int lhs_;
-    int rhs_;
+    NodePtr lhs_;
+    NodePtr rhs_;
 
 public:
-    AddExpr(int lhs, int rhs) : lhs_(lhs), rhs_(rhs) {}
+    AddExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
     void EmitRISC(std::ostream& stream, Context& context) const override;
     void Print(std::ostream& stream) const override;

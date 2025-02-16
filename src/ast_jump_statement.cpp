@@ -8,6 +8,7 @@ void ReturnStatement::EmitRISC(std::ostream& stream, Context& context) const
     {
         expression_->EmitRISC(stream, context);
     }
+    stream << "mv a0,a5" << std::endl;
     stream << "ret" << std::endl;
 }
 

@@ -156,7 +156,7 @@ multiplicative_expression
 
 additive_expression
 	: multiplicative_expression
-	| additive_expression '+' multiplicative_expression
+	| additive_expression '+' multiplicative_expression{ $$ = new AddExpr(NodePtr($1), NodePtr($3)); }
 	| additive_expression '-' multiplicative_expression
 	;
 
