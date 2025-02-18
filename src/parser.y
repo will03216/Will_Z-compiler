@@ -74,7 +74,7 @@ function_definition
 
 declaration
 	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator ';' { $$ = new Variable($1, NodePtr($2)); }
+	| declaration_specifiers init_declarator ';' { $$ = new VariableDeclare($1, NodePtr($2)); }
 	;
 
 declaration_specifiers
@@ -88,12 +88,12 @@ type_specifier
 	;
 
 init_declarator
-	: declarator
+	: declarator { $$ = new InitDeclarator(NodePtr($1), nullptr); }
 	| declarator '=' initializer { $$ = new InitDeclarator(NodePtr($1), NodePtr($3)); }
 	;
 
 initializer
-	: assignment_expression
+	: expression
 
 declarator
 	: direct_declarator { $$ = $1; }
@@ -111,6 +111,8 @@ direct_declarator
 
 statement
 	: jump_statement { $$ = $1; }
+	| declaration { $$ = $1; }
+	| expression_statement { $$ = $1; }
 	;
 
 compound_statement
@@ -135,23 +137,23 @@ primary_expression
 	: INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
-    | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
+     | IDENTIFIER { $$ = new VariableCall(std::move(*$1)); delete $1; }
 	;
 
 postfix_expression
-	: primary_expression
+	: primary_expression { $$ = $1; }
 	;
 
 unary_expression
-	: postfix_expression
+	: postfix_expression { $$ = $1; }
 	;
 
 cast_expression
-	: unary_expression
+	: unary_expression { $$ = $1; }
 	;
 
 multiplicative_expression
-	: cast_expression
+	: cast_expression { $$ = $1; }
 	;
 
 additive_expression
@@ -161,44 +163,44 @@ additive_expression
 	;
 
 shift_expression
-	: additive_expression
+	: additive_expression { $$ = $1; }
 	;
 
 relational_expression
-	: shift_expression
+	: shift_expression { $$ = $1; }
 	;
 
 equality_expression
-	: relational_expression
+	: relational_expression { $$ = $1; }
 	;
 
 and_expression
-	: equality_expression
+	: equality_expression { $$ = $1; }
 	;
 
 exclusive_or_expression
-	: and_expression
+	: and_expression { $$ = $1; }
 	;
 
 inclusive_or_expression
-	: exclusive_or_expression
+	: exclusive_or_expression { $$ = $1; }
 	;
 
 logical_and_expression
-	: inclusive_or_expression
+	: inclusive_or_expression { $$ = $1; }
 	;
 
 logical_or_expression
-	: logical_and_expression
+	: logical_and_expression { $$ = $1; }
 	;
 
 conditional_expression
-	: logical_or_expression
+	: logical_or_expression { $$ = $1; }
 	;
 
 assignment_expression
-	: conditional_expression
-	| unary_expression assignment_operator assignment_expression
+	: conditional_expression { $$ = $1; }
+	| IDENTIFIER assignment_operator assignment_expression { $$ = new VariableAssign(std::move(*$1), NodePtr($3)); delete $1; }
 	;
 
 assignment_operator
@@ -216,7 +218,10 @@ assignment_operator
 	;
 
 expression
-	: assignment_expression
+	: assignment_expression { $$ = $1; }
+	;
+expression_statement
+	: expression ';' { $$ = $1; }
 	;
 
 %%

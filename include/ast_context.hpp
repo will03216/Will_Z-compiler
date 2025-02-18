@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ast_symbol_table.hpp>
+#include "ast_type_specifier.hpp"
 
 namespace ast {
 // An object of class Context is passed between ast nodes during compilation.
@@ -12,7 +13,7 @@ class Context
         SymbolTable symbol_table_;
 
     public:
-        void AddSymbol(const std::string& name, const std::string& type, int offset);
+        void AddSymbol(const std::string& name, const TypeSpecifier& type);
         const Symbol* GetSymbol(const std::string& name) const;
         bool HasSymbol(const std::string& name) const;
         //void Print(std::ostream& stream) const;

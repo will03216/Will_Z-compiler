@@ -1,9 +1,12 @@
 #include "ast_symbol_table.hpp"
 
 namespace ast {
-    void SymbolTable::AddSymbol(const std::string& name, const std::string& type, int offset)
+    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type)
     {
-        table_[name] = {name, type, offset};
+        table_[name] = {name, type, offset_};
+        int temp = offset_;
+        offset_ -= 4;
+        return temp;
     }
     const Symbol* SymbolTable::GetSymbol(const std::string& name) const
     {

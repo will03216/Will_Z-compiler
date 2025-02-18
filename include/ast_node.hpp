@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <string>
 
 #include "ast_context.hpp"
 
@@ -14,6 +15,7 @@ public:
     virtual ~Node() {}
     virtual void EmitRISC(std::ostream& stream, Context& context) const = 0;
     virtual void Print(std::ostream& stream) const = 0;
+    virtual std::string GetIdentifier() const { return ""; };
 };
 
 // If you don't feel comfortable using std::unique_ptr, you can switch NodePtr to be defined
@@ -33,6 +35,8 @@ public:
     void PushBack(NodePtr item);
     virtual void EmitRISC(std::ostream& stream, Context& context) const override;
     virtual void Print(std::ostream& stream) const override;
+    virtual std::string GetIdentifier() const { return ""; };
+
 };
 
 } // namespace ast

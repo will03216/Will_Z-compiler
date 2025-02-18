@@ -1,9 +1,9 @@
 #include "ast_context.hpp"
 
 namespace ast {
-    void Context::AddSymbol(const std::string& name, const std::string& type, int offset)
+    void Context::AddSymbol(const std::string& name, const TypeSpecifier& type)
     {
-        symbol_table_.AddSymbol(name, type, offset);
+        symbol_table_.AddSymbol(name, type);
     }
     const Symbol* Context::GetSymbol(const std::string& name) const
     {
