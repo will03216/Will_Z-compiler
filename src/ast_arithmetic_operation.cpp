@@ -3,7 +3,7 @@
 namespace ast {
 
 
-void AddExpr::EmitRISC(std::ostream& stream, Context& context) const
+void AddExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
 {
     lhs_->EmitRISC(stream, context);
     stream << "mv a4,a5" << std::endl;

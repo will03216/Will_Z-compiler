@@ -21,11 +21,13 @@ class SymbolTable
         std::unordered_map<std::string, Symbol> table_;
         int offset_ = -20;
     public:
+
         SymbolTable(int offset = -20) : offset_(offset) {}
         int AddSymbol(const std::string& name, const TypeSpecifier& type); // change this to return offset so dont hv to call GetOffset on declaration
 
         const Symbol* GetSymbol(const std::string& name) const;
         bool HasSymbol(const std::string& name) const;
+        int GetOffset() const;
 
 };
 

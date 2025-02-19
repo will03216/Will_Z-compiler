@@ -1,6 +1,6 @@
 #include "ast_init_declarator.hpp"
 namespace ast {
-    void InitDeclarator::EmitRISC(std::ostream& stream, Context& context) const
+    void InitDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
     {
         if (initializer_ != nullptr)
         {

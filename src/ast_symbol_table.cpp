@@ -21,4 +21,8 @@ namespace ast {
     {
         return table_.find(name) != table_.end();
     }
+    int SymbolTable::GetOffset() const
+    {
+        return offset_;
+    }
 }// namespace ast

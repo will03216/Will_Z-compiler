@@ -2,7 +2,7 @@
 
 namespace ast {
 
-void IntConstant::EmitRISC(std::ostream& stream, Context&) const
+void IntConstant::EmitRISC(std::ostream& stream, std::shared_ptr<Context>) const
 {
     stream << "li a5, " << value_ << std::endl;
 }

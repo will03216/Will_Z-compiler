@@ -113,6 +113,7 @@ statement
 	: jump_statement { $$ = $1; }
 	| declaration { $$ = $1; }
 	| expression_statement { $$ = $1; }
+	| compound_statement { $$ = new CompoundStatement(NodePtr($1)); }
 	;
 
 compound_statement

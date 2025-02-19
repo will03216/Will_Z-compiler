@@ -12,7 +12,7 @@ private:
 public:
     DirectDeclarator(NodePtr identifier) : identifier_(std::move(identifier)){};
 
-    void EmitRISC(std::ostream& stream, Context& context) const override;
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
     void Print(std::ostream& stream) const override;
     std::string GetIdentifier() const override { return identifier_->GetIdentifier(); };
 };

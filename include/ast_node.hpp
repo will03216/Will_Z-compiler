@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
-
+#include "ast_scope.hpp"
 #include "ast_context.hpp"
 
 namespace ast {
@@ -13,7 +13,7 @@ class Node
 {
 public:
     virtual ~Node() {}
-    virtual void EmitRISC(std::ostream& stream, Context& context) const = 0;
+    virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const = 0;
     virtual void Print(std::ostream& stream) const = 0;
     virtual std::string GetIdentifier() const { return ""; };
 };
@@ -33,7 +33,7 @@ public:
     NodeList(NodePtr first_node) { nodes_.push_back(std::move(first_node)); }
 
     void PushBack(NodePtr item);
-    virtual void EmitRISC(std::ostream& stream, Context& context) const override;
+    virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
     virtual void Print(std::ostream& stream) const override;
     virtual std::string GetIdentifier() const { return ""; };
 

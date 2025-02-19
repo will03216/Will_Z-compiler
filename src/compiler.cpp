@@ -67,7 +67,7 @@ void Compile(const NodePtr& root, const std::string& compile_output_path)
 {
     // Create a Context. This can be used to pass around information about
     // what's currently being compiled (e.g. function scope and variable names).
-    ast::Context ctx;
+    std::shared_ptr<ast::Context> ctx = ast::Context::Create(nullptr);
 
     std::cout << "Compiling parsed AST..." << std::endl;
 

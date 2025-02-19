@@ -2,7 +2,7 @@
 
 namespace ast {
 
-void DirectDeclarator::EmitRISC(std::ostream& stream, Context& context) const
+void DirectDeclarator::EmitRISC(std::ostream& stream,  std::shared_ptr<Context> context) const
 {
     identifier_->EmitRISC(stream, context);
     stream << ":" << std::endl;

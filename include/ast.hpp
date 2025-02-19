@@ -15,4 +15,5 @@
 #include "ast_variable.hpp"
 #include "ast_init_declarator.hpp"
 #include "ast_arithmetic_operation.hpp"
+#include "ast_compound_statement.hpp"
 ast::NodePtr ParseAST(std::string file_name);

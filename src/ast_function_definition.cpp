@@ -2,7 +2,7 @@
 
 namespace ast {
 
-void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
+void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
 {
     // Emit assembler directives.
     // TODO: these are just examples ones, make sure you understand
@@ -11,11 +11,14 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, Context& context) const
     stream << ".text" << std::endl;
     stream << ".globl f" << std::endl;
 
-    declarator_->EmitRISC(stream, context);
+    //enter scope of function
+    std::shared_ptr<Context> function_context = context->CreateChildContext();
+    declarator_->EmitRISC(stream, function_context);
+    enter_scope(stream);
 
     if (compound_statement_ != nullptr)
     {
-        compound_statement_->EmitRISC(stream, context);
+        compound_statement_->EmitRISC(stream, function_context);
     }
 }
 
