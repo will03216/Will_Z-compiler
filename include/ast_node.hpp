@@ -16,6 +16,7 @@ public:
     virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const = 0;
     virtual void Print(std::ostream& stream) const = 0;
     virtual std::string GetIdentifier() const { return ""; };
+    virtual std::vector<std::string> GetIdentifiers() const { return {}; };
 };
 
 // If you don't feel comfortable using std::unique_ptr, you can switch NodePtr to be defined
@@ -35,8 +36,7 @@ public:
     void PushBack(NodePtr item);
     virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
     virtual void Print(std::ostream& stream) const override;
-    virtual std::string GetIdentifier() const { return ""; };
-
+    virtual std::vector<std::string> GetIdentifiers() const override;
 };
 
 } // namespace ast

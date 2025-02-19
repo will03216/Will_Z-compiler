@@ -13,8 +13,17 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context>
 
     //enter scope of function
     std::shared_ptr<Context> function_context = context->CreateChildContext();
-    declarator_->EmitRISC(stream, function_context);
+    //function label
+    stream<< declarator_->GetIdentifier();
+    stream << ":" << std::endl;
+    //enter scope of function
     enter_scope(stream);
+
+    //store function arguments
+    if (declarator_ != nullptr)
+    {
+        declarator_->EmitRISC(stream, function_context);
+    }
 
     if (compound_statement_ != nullptr)
     {

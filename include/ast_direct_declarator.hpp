@@ -8,9 +8,10 @@ class DirectDeclarator : public Node
 {
 private:
     NodePtr identifier_;
+    NodePtr parameters_;
 
 public:
-    DirectDeclarator(NodePtr identifier) : identifier_(std::move(identifier)){};
+    DirectDeclarator(NodePtr identifier, NodePtr parameters = nullptr) : identifier_(std::move(identifier)), parameters_(std::move(parameters)){};
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
     void Print(std::ostream& stream) const override;

@@ -39,12 +39,12 @@
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression declaration init_declarator_list
 %type <node> init_declarator struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_list parameter_declaration
+%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement
 
 
-%type <node_list> statement_list
+%type <node_list> statement_list parameter_list
 
 %type <number_int> INT_CONSTANT STRING_LITERAL
 %type <number_float> FLOAT_CONSTANT
@@ -107,6 +107,17 @@ direct_declarator
 	| direct_declarator '(' ')' {
 		$$ = new DirectDeclarator(NodePtr($1));
 	}
+	| direct_declarator '(' parameter_list ')' {
+		$$ = new DirectDeclarator(NodePtr($1), NodePtr($3));
+	}
+	;
+parameter_list
+	: parameter_declaration { $$ = new NodeList(NodePtr($1)); }
+	//fix this
+	| parameter_list ',' parameter_declaration { $1->PushBack(NodePtr($3)); $$=$1; }
+	;
+parameter_declaration
+	: declaration_specifiers declarator { $$ = $2; }
 	;
 
 statement

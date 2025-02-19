@@ -30,5 +30,17 @@ void NodeList::Print(std::ostream& stream) const
         node->Print(stream);
     }
 }
-
+std::vector<std::string> NodeList::GetIdentifiers() const
+{
+    std::vector<std::string> identifiers;
+    for (const auto& node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        identifiers.push_back(node->GetIdentifier());
+    }
+    return identifiers;
+}
 }
