@@ -26,4 +26,8 @@ namespace ast {
         }
         return parent_context_->GetScopedSymbol(name);
     }
+    std::string Context::GetNewLabel()
+    {
+        return "L" + std::to_string(label_counter_++);
+    }
 }

@@ -125,6 +125,7 @@ statement
 	| declaration { $$ = $1; }
 	| expression_statement { $$ = $1; }
 	| compound_statement { $$ = new CompoundStatement(NodePtr($1)); }
+	| selection_statement { $$ = $1; }
 	;
 
 compound_statement
@@ -180,30 +181,41 @@ shift_expression
 
 relational_expression
 	: shift_expression { $$ = $1; }
+	| relational_expression '<' shift_expression { $$ = new LessThanExpr(NodePtr($1), NodePtr($3)); }
+	| relational_expression '>' shift_expression { $$ = new GreaterThanExpr(NodePtr($1), NodePtr($3)); }
+	| relational_expression LE_OP shift_expression { $$ = new LessThanEqualExpr(NodePtr($1), NodePtr($3)); }
+	| relational_expression GE_OP shift_expression { $$ = new GreaterThanEqualExpr(NodePtr($1), NodePtr($3)); }
 	;
 
 equality_expression
 	: relational_expression { $$ = $1; }
+	| equality_expression EQ_OP relational_expression { $$ = new EqualityExpr(NodePtr($1), NodePtr($3)); }
+	| equality_expression NE_OP relational_expression
 	;
 
 and_expression
 	: equality_expression { $$ = $1; }
+	| and_expression '&' equality_expression
 	;
 
 exclusive_or_expression
 	: and_expression { $$ = $1; }
+	| exclusive_or_expression '^' and_expression
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression { $$ = $1; }
+	| inclusive_or_expression '|' exclusive_or_expression
 	;
 
 logical_and_expression
 	: inclusive_or_expression { $$ = $1; }
+	| logical_and_expression AND_OP inclusive_or_expression
 	;
 
 logical_or_expression
 	: logical_and_expression { $$ = $1; }
+	| logical_or_expression OR_OP logical_and_expression
 	;
 
 conditional_expression
@@ -235,6 +247,13 @@ expression
 expression_statement
 	: expression ';' { $$ = $1; }
 	;
+
+selection_statement
+	: IF '(' expression ')' statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), nullptr ); }
+	| IF '(' expression ')' statement ELSE statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
+	| SWITCH '(' expression ')' statement
+	;
+
 
 %%
 
