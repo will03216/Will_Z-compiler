@@ -18,4 +18,5 @@
 #include "ast_compound_statement.hpp"
 #include "ast_logic_operation.hpp"
 #include "ast_selection_statement.hpp"
+#include "ast_iteration_statement.hpp"
 ast::NodePtr ParseAST(std::string file_name);

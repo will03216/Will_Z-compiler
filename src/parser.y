@@ -126,10 +126,12 @@ statement
 	| expression_statement { $$ = $1; }
 	| compound_statement { $$ = new CompoundStatement(NodePtr($1)); }
 	| selection_statement { $$ = $1; }
+	| iteration_statement { $$ = $1; }
 	;
 
 compound_statement
 	: '{' statement_list '}' { $$ = $2; }
+	| '{' '}' { $$ = new NodeList(nullptr); }
 	;
 
 statement_list
@@ -172,7 +174,7 @@ multiplicative_expression
 additive_expression
 	: multiplicative_expression
 	| additive_expression '+' multiplicative_expression{ $$ = new AddExpr(NodePtr($1), NodePtr($3)); }
-	| additive_expression '-' multiplicative_expression
+	| additive_expression '-' multiplicative_expression { $$ = new SubExpr(NodePtr($1), NodePtr($3)); }
 	;
 
 shift_expression
@@ -254,6 +256,13 @@ selection_statement
 	| SWITCH '(' expression ')' statement
 	;
 
+iteration_statement
+	: WHILE '(' expression ')' statement { $$ = new WhileStatement(NodePtr($3), NodePtr($5)); }
+	| DO statement WHILE '(' expression ')' ';'
+	| FOR '(' expression_statement expression_statement ')' statement { $$ = new ForStatement(nullptr, NodePtr($3), NodePtr($4), NodePtr($6)); }
+	| FOR '(' expression_statement expression_statement expression ')' statement { $$ = new ForStatement(NodePtr($3), NodePtr($4), NodePtr($5), NodePtr($7)); }
+	| FOR '(' declaration expression_statement expression_statement ')' statement { $$ = new ForInitStatement(NodePtr($3), NodePtr($4), NodePtr($5), NodePtr($7)); }
+	;
 
 %%
 
