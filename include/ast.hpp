@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ast_direct_declarator.hpp"
-#include "ast_function_definition.hpp"
+#include "ast_function.hpp"
 #include "ast_identifier.hpp"
 #include "ast_jump_statement.hpp"
 #include "ast_node.hpp"
@@ -19,4 +19,5 @@
 #include "ast_logic_operation.hpp"
 #include "ast_selection_statement.hpp"
 #include "ast_iteration_statement.hpp"
+#include "ast_argument_list.hpp"
 ast::NodePtr ParseAST(std::string file_name);

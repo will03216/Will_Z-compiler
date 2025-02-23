@@ -1,4 +1,4 @@
-#include "ast_function_definition.hpp"
+#include "ast_function.hpp"
 
 namespace ast {
 
@@ -43,6 +43,29 @@ void FunctionDefinition::Print(std::ostream& stream) const
         compound_statement_->Print(stream);
     }
     stream << "}" << std::endl;
+}
+
+void FunctionCall::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+{
+    if (argument_expression_list_ != nullptr) {
+        argument_expression_list_->EmitRISC(stream, context);
+    }
+    stream << "call " ;
+    identifier_->Print(stream);
+    stream << std::endl;
+    stream << "mv a5,a0" << std::endl;
+}
+
+void FunctionCall::Print(std::ostream& stream) const
+{
+    identifier_->Print(stream);
+    stream << "(";
+    if (argument_expression_list_ != nullptr)
+    {
+        argument_expression_list_->Print(stream);
+    }
+    stream << ")";
+
 }
 
 }

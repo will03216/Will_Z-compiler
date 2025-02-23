@@ -84,4 +84,22 @@ namespace ast {
         rhs_->Print(stream);
         stream << ")";
     }
+
+    void InequalityExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+    {
+        lhs_->EmitRISC(stream, context);
+        stream << "mv a4,a5"<< std::endl;
+        rhs_->EmitRISC(stream, context);
+        stream << "sub a5,a4,a5" << std::endl;
+        stream << "snez a5,a5" << std::endl;
+    }
+
+    void InequalityExpr::Print(std::ostream& stream) const
+    {
+        stream << "(";
+        lhs_->Print(stream);
+        stream << " != ";
+        rhs_->Print(stream);
+        stream << ")";
+    }
 }

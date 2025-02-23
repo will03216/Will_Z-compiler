@@ -64,5 +64,17 @@ EqualityExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rh
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
     void Print(std::ostream& stream) const override;
 };
+class InequalityExpr : public Node
+{
+private:
+    NodePtr lhs_;
+    NodePtr rhs_;
+public:
+InequalityExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
+
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+    void Print(std::ostream& stream) const override;
+};
+
 
 } // namespace ast

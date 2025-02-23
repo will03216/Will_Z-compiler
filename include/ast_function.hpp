@@ -19,4 +19,15 @@ public:
     void Print(std::ostream& stream) const override;
 };
 
+class FunctionCall : public Node
+{
+private:
+    NodePtr identifier_;
+    NodePtr argument_expression_list_;
+public:
+    FunctionCall(NodePtr identifier, NodePtr argument_expression_list) : identifier_(std::move(identifier)), argument_expression_list_(std::move(argument_expression_list)){};
+
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+    void Print(std::ostream& stream) const override;
+};
 } // namespace ast

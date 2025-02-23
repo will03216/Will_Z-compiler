@@ -9,7 +9,8 @@
 
 	using namespace ast;
 
-    extern Node* g_root;
+
+	extern NodeList* g_root;
     extern FILE* yyin;
     int yylex(void);
     void yyerror(const char*);
@@ -34,7 +35,7 @@
 %token STRUCT UNION ENUM ELLIPSIS
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
-%type <node> translation_unit external_declaration function_definition primary_expression postfix_expression argument_expression_list
+%type <node> external_declaration function_definition primary_expression postfix_expression
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression declaration init_declarator_list
@@ -44,7 +45,7 @@
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement
 
 
-%type <node_list> statement_list parameter_list
+%type <node_list> statement_list parameter_list argument_expression_list translation_unit
 
 %type <number_int> INT_CONSTANT STRING_LITERAL
 %type <number_float> FLOAT_CONSTANT
@@ -59,8 +60,8 @@ ROOT
     : translation_unit { g_root = $1; }
 
 translation_unit
-	: external_declaration { $$ = $1; }
-	;
+	: external_declaration { $$ = new NodeList(NodePtr($1)); }
+    | translation_unit external_declaration { $1->PushBack(NodePtr($2)); $$=$1; }
 
 external_declaration
 	: function_definition { $$ = $1; }
@@ -69,7 +70,9 @@ external_declaration
 function_definition
 	: declaration_specifiers declarator compound_statement {
 		$$ = new FunctionDefinition($1, NodePtr($2), NodePtr($3));
+
 	}
+	| declaration_specifiers declarator ';' {}
 	;
 
 declaration
@@ -152,11 +155,28 @@ primary_expression
 	: INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
-     | IDENTIFIER { $$ = new VariableCall(std::move(*$1)); delete $1; }
+     | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
 	;
 
 postfix_expression
-	: primary_expression { $$ = $1; }
+	: primary_expression {
+        if ($1->GetIdentifier() != ""){
+            $$ = new VariableCall(std::move($1->GetIdentifier()));
+        } else {
+            $$ = $1;
+        } }
+    | postfix_expression '[' expression ']'
+	| postfix_expression '(' ')' { $$ = new FunctionCall(NodePtr($1), nullptr); }
+	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
+	| postfix_expression '.' IDENTIFIER
+	| postfix_expression PTR_OP IDENTIFIER
+	| postfix_expression INC_OP
+	| postfix_expression DEC_OP
+	;
+
+argument_expression_list
+	: assignment_expression { $$ = new ArgumentExpressionList(NodePtr($1)); }
+	| argument_expression_list ',' assignment_expression { $1->PushBack(NodePtr($3)); $$=$1; }
 	;
 
 unary_expression
@@ -192,7 +212,7 @@ relational_expression
 equality_expression
 	: relational_expression { $$ = $1; }
 	| equality_expression EQ_OP relational_expression { $$ = new EqualityExpr(NodePtr($1), NodePtr($3)); }
-	| equality_expression NE_OP relational_expression
+	| equality_expression NE_OP relational_expression { $$ = new InequalityExpr(NodePtr($1), NodePtr($3)); }
 	;
 
 and_expression
@@ -266,7 +286,7 @@ iteration_statement
 
 %%
 
-Node* g_root;
+NodeList* g_root;
 
 NodePtr ParseAST(std::string file_name)
 {

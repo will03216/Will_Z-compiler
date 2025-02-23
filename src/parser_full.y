@@ -79,7 +79,7 @@ function_definition
 
 
 primary_expression
-	: IDENTIFIER
+	: IDENTIFIER { $$ =  new Identifier(std::move(*$1)); delete $1; }
 	| INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
@@ -89,7 +89,7 @@ primary_expression
 	;
 
 postfix_expression
-	: primary_expression
+	: primary_expression { $$ = $1; }
 	| postfix_expression '[' expression ']'
 	| postfix_expression '(' ')'
 	| postfix_expression '(' argument_expression_list ')'
