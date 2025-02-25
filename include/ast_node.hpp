@@ -13,7 +13,7 @@ class Node
 {
 public:
     virtual ~Node() {}
-    virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const = 0;
+    virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const = 0;
     virtual void Print(std::ostream& stream) const = 0;
     virtual std::string GetIdentifier() const { return ""; };
     virtual std::vector<std::string> GetIdentifiers() const { return {}; };
@@ -35,7 +35,7 @@ public:
     NodeList(NodePtr first_node) { nodes_.push_back(std::move(first_node)); }
 
     virtual void PushBack(NodePtr item);
-    virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+    virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
     virtual void Print(std::ostream& stream) const override;
     virtual std::vector<std::string> GetIdentifiers() const override;
 };

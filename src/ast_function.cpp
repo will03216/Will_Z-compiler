@@ -2,7 +2,7 @@
 
 namespace ast {
 
-void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+    void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
 {
     std::string function_name = declarator_->GetIdentifier();
     // Emit assembler directives.
@@ -22,12 +22,12 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context>
     //store function arguments
     if (declarator_ != nullptr)
     {
-        declarator_->EmitRISC(stream, function_context);
+        declarator_->EmitRISC(stream, function_context, destReg);
     }
 
     if (compound_statement_ != nullptr)
     {
-        compound_statement_->EmitRISC(stream, function_context);
+        compound_statement_->EmitRISC(stream, function_context, "a5");
     }
 }
 
@@ -45,15 +45,15 @@ void FunctionDefinition::Print(std::ostream& stream) const
     stream << "}" << std::endl;
 }
 
-void FunctionCall::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+void FunctionCall::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
 {
     if (argument_expression_list_ != nullptr) {
-        argument_expression_list_->EmitRISC(stream, context);
+        argument_expression_list_->EmitRISC(stream, context, "a5");
     }
     stream << "call " ;
     identifier_->Print(stream);
     stream << std::endl;
-    stream << "mv a5,a0" << std::endl;
+    stream << "mv "<< destReg <<",a0" << std::endl;
 }
 
 void FunctionCall::Print(std::ostream& stream) const

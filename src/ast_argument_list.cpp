@@ -1,13 +1,14 @@
 #include "ast_argument_list.hpp"
 
 namespace ast {
-    void ArgumentExpressionList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
-{
+    void ArgumentExpressionList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    {
     int num_args = 0;
     for (const auto& argument : arguments_)
     {
-        argument->EmitRISC(stream, context);
-        stream << "mv a" << num_args << ",a5" << std::endl;
+        std::string argReg = "a" + std::to_string(num_args);
+        argument->EmitRISC(stream, context, destReg);
+        stream << "mv " << argReg << ","<< destReg <<"" << std::endl;
         num_args++;
     }
 }

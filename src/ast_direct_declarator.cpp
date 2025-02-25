@@ -2,8 +2,9 @@
 #include <string>
 namespace ast {
 
-void DirectDeclarator::EmitRISC(std::ostream& stream,  std::shared_ptr<Context> context) const
+    void DirectDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
 {
+    (void)destReg; //unused
     if (parameters_ != nullptr)
     {
         std::vector<std::string> identifiers = parameters_->GetIdentifiers();

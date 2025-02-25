@@ -10,7 +10,7 @@ namespace ast {
     public:
         IfStatement(NodePtr condition, NodePtr true_statement, NodePtr false_statement) : condition_(std::move(condition)), true_statement_(std::move(true_statement)), false_statement_(std::move(false_statement)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
         void Print(std::ostream& stream) const override;
     };
 }  // namespace ast

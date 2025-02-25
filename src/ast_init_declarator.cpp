@@ -1,10 +1,10 @@
 #include "ast_init_declarator.hpp"
 namespace ast {
-    void InitDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+    void InitDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
     {
         if (initializer_ != nullptr)
         {
-            initializer_->EmitRISC(stream, context);
+            initializer_->EmitRISC(stream, context, destReg);
         }
     }
     void InitDeclarator::Print(std::ostream& stream) const

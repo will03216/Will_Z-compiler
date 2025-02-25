@@ -9,7 +9,7 @@ namespace ast {
     public:
         WhileStatement(NodePtr condition, NodePtr loop_statement) : condition_(std::move(condition)), loop_statement_(std::move(loop_statement)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
         void Print(std::ostream& stream) const override;
     };
 
@@ -22,7 +22,7 @@ namespace ast {
     public:
         DoWhileStatement(NodePtr condition, NodePtr loop_statement) : condition_(std::move(condition)), loop_statement_(std::move(loop_statement)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
         void Print(std::ostream& stream) const override;
     };
 
@@ -37,7 +37,7 @@ namespace ast {
     public:
         ForStatement(NodePtr init_statement, NodePtr condition, NodePtr iteration_expression, NodePtr loop_statement) : init_statement_(std::move(init_statement)), condition_(std::move(condition)), iteration_expression_(std::move(iteration_expression)), loop_statement_(std::move(loop_statement)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
         void Print(std::ostream& stream) const override;
     };
 
@@ -51,7 +51,7 @@ namespace ast {
     public:
         ForInitStatement(NodePtr init_statement, NodePtr condition, NodePtr iteration_expression, NodePtr loop_statement) : init_statement_(std::move(init_statement)), condition_(std::move(condition)), iteration_expression_(std::move(iteration_expression)), loop_statement_(std::move(loop_statement)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
         void Print(std::ostream& stream) const override;
     };
 

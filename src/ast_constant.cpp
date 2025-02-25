@@ -2,9 +2,10 @@
 
 namespace ast {
 
-void IntConstant::EmitRISC(std::ostream& stream, std::shared_ptr<Context>) const
+    void IntConstant::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
 {
-    stream << "li a5, " << value_ << std::endl;
+    (void)context;
+    stream << "li "<< destReg <<", " << value_ << std::endl;
 }
 
 void IntConstant::Print(std::ostream& stream) const

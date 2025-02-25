@@ -2,11 +2,11 @@
 
 namespace ast {
 
-void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+    void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string ) const
 {
     if (expression_ != nullptr)
     {
-        expression_->EmitRISC(stream, context);
+        expression_->EmitRISC(stream, context, "a5");
     }
     stream << "mv a0,a5" << std::endl;
     exit_scope(stream);

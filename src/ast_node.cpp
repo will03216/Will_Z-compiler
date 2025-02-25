@@ -7,7 +7,7 @@ void NodeList::PushBack(NodePtr item)
     nodes_.push_back(std::move(item));
 }
 
-void NodeList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) const
+void NodeList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
 {
     for (const auto& node : nodes_)
     {
@@ -15,7 +15,7 @@ void NodeList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context) 
         {
             continue;
         }
-        node->EmitRISC(stream, context);
+        node->EmitRISC(stream, context, destReg);
     }
 }
 
