@@ -49,7 +49,7 @@
 
 %type <number_int> INT_CONSTANT STRING_LITERAL
 %type <number_float> FLOAT_CONSTANT
-%type <string> IDENTIFIER
+%type <string> IDENTIFIER assignment_operator
 %type <type_specifier> type_specifier declaration_specifiers
 
 
@@ -156,6 +156,7 @@ primary_expression
 		$$ = new IntConstant($1);
 	}
      | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
+	 | '(' expression ')' { $$ = $2; }
 	;
 
 postfix_expression
@@ -170,8 +171,20 @@ postfix_expression
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
 	| postfix_expression '.' IDENTIFIER
 	| postfix_expression PTR_OP IDENTIFIER
-	| postfix_expression INC_OP
-	| postfix_expression DEC_OP
+	| postfix_expression INC_OP {
+        if ($1->GetIdentifier() != ""){
+            $$ = new VariablePostInc (std::move($1->GetIdentifier()));
+        } else {
+            $$ = $1;
+        }
+        }
+	| postfix_expression DEC_OP {
+        if ($1->GetIdentifier() != ""){
+            $$ = new VariablePostDec (std::move($1->GetIdentifier()));
+        } else {
+            $$ = $1;
+        }
+        }
 	;
 
 argument_expression_list
@@ -181,6 +194,9 @@ argument_expression_list
 
 unary_expression
 	: postfix_expression { $$ = $1; }
+	| INC_OP unary_expression
+	| DEC_OP unary_expression
+	| '-' postfix_expression {   $$ = new Negation(NodePtr($2)); }
 	;
 
 cast_expression
@@ -251,22 +267,23 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression { $$ = $1; }
-	| IDENTIFIER assignment_operator assignment_expression { $$ = new VariableAssign(std::move(*$1), NodePtr($3)); delete $1; }
+	| IDENTIFIER assignment_operator assignment_expression {$$ = new VariableAssign(std::move(*$1), NodePtr($3), std::move(*$2)); delete $1; delete $2; }
 	;
 
 assignment_operator
-	: '='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
-	;
+	 : '=' { $$ = new std::string("="); }
+    | MUL_ASSIGN { $$ = new std::string("*="); }
+    | DIV_ASSIGN { $$ = new std::string("/="); }
+    | MOD_ASSIGN { $$ = new std::string("%="); }
+    | ADD_ASSIGN { $$ = new std::string("+="); }
+    | SUB_ASSIGN { $$ = new std::string("-="); }
+    | LEFT_ASSIGN { $$ = new std::string("<<="); }
+    | RIGHT_ASSIGN { $$ = new std::string(">>="); }
+    | AND_ASSIGN { $$ = new std::string("&="); }
+    | XOR_ASSIGN { $$ = new std::string("^="); }
+    | OR_ASSIGN { $$ = new std::string("|="); }
+    ;
+
 
 expression
 	: assignment_expression { $$ = $1; }

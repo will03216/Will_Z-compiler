@@ -47,12 +47,28 @@ void FunctionDefinition::Print(std::ostream& stream) const
 
 void FunctionCall::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
 {
+    //push S1 and S2 into stack
+    stream << "addi sp, sp, -8" << std::endl;
+    stream << "sw s1, 0(sp)" << std::endl;
+    stream << "sw s2, 4(sp)" << std::endl;
+
+
+    stream << "mv s1, a4" << std::endl;
+    stream << "mv s2, a5" << std::endl;
     if (argument_expression_list_ != nullptr) {
         argument_expression_list_->EmitRISC(stream, context, "a5");
     }
     stream << "call " ;
     identifier_->Print(stream);
     stream << std::endl;
+
+    stream << "mv a4, s1" << std::endl;
+    stream << "mv a5, s2" << std::endl;
+
+    // Pop S1 and S2 from stack
+    stream << "lw s1, 0(sp)" << std::endl;
+    stream << "lw s2, 4(sp)" << std::endl;
+    stream << "addi sp, sp, 8" << std::endl;
     stream << "mv "<< destReg <<",a0" << std::endl;
 }
 

@@ -92,4 +92,19 @@ namespace ast {
         stream << "right shift lhs >> rhs";
     }
 
+
+    void Negation::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    {
+        expression_->EmitRISC(stream, context, destReg);
+        stream << "neg " << destReg << ", " << destReg << std::endl;
+    }
+
+    void Negation::Print(std::ostream& stream) const {
+        stream << "-expression" << std::endl;
+    }
+
+
+
+
+
     } // namespace ast

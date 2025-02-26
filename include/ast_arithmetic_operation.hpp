@@ -96,4 +96,20 @@ namespace ast
         void Print(std::ostream &stream) const override;
 
     };
+
+    class Negation : public Node
+{
+private:
+    NodePtr expression_;
+
+public:
+    Negation(NodePtr expression) : expression_(std::move(expression)) {}
+
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    void Print(std::ostream& stream) const override;
+};
+
+
+
+
 }// namespace ast
