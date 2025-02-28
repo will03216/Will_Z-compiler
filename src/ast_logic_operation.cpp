@@ -112,7 +112,7 @@ namespace ast {
         stream << logical_and_false << ":" << std::endl;
         stream << "li "<< destReg <<", 0" << std::endl;
         stream << end << ":" << std::endl;
-        stream << ")";
+
     }
     void LogicalAndExpr::Print(std::ostream& stream) const
     {
