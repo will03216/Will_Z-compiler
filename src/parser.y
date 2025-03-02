@@ -113,6 +113,13 @@ direct_declarator
 	| direct_declarator '(' parameter_list ')' {
 		$$ = new DirectDeclarator(NodePtr($1), NodePtr($3));
 	}
+	| direct_declarator '[' INT_CONSTANT ']' {
+		$$ = new DirectDeclarator(NodePtr($1), nullptr, $3);
+	}
+	;
+
+constant_expression
+	: conditional_expression { $$ = $1; }
 	;
 parameter_list
 	: parameter_declaration { $$ = new NodeList(NodePtr($1)); }
@@ -162,11 +169,11 @@ primary_expression
 postfix_expression
 	: primary_expression {
         if ($1->GetIdentifier() != ""){
-            $$ = new VariableCall(std::move($1->GetIdentifier()));
+             $$ = new VariableCall(std::move($1->GetIdentifier()) , nullptr);
         } else {
             $$ = $1;
         } }
-    | postfix_expression '[' expression ']'
+    | postfix_expression '[' expression ']' { $$ = new VariableCall(std::move($1->GetIdentifier()), NodePtr($3)); }
 	| postfix_expression '(' ')' { $$ = new FunctionCall(NodePtr($1), nullptr); }
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
 	| postfix_expression '.' IDENTIFIER
@@ -267,7 +274,8 @@ conditional_expression
 
 assignment_expression
 	: conditional_expression { $$ = $1; }
-	| IDENTIFIER assignment_operator assignment_expression {$$ = new VariableAssign(std::move(*$1), NodePtr($3), std::move(*$2)); delete $1; delete $2; }
+	//| IDENTIFIER assignment_operator assignment_expression {$$ = new VariableAssign(std::move(*$1), NodePtr($3), std::move(*$2)); delete $1; delete $2; }
+    | unary_expression assignment_operator assignment_expression { $$ = new VariableAssign(NodePtr($1), NodePtr($3), std::move(*$2)); delete $2; }
 	;
 
 assignment_operator

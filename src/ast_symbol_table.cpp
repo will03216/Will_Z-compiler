@@ -25,4 +25,11 @@ namespace ast {
     {
         return offset_;
     }
+    int SymbolTable::AddArray(const std::string& name, const TypeSpecifier& type, int size)
+    {
+        table_[name] = {name, type, offset_};
+        int temp = offset_;
+        offset_ -= 4 * size;
+        return temp;
+    }
 }// namespace ast

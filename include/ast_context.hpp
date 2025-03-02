@@ -22,7 +22,7 @@ public:
         return std::shared_ptr<Context>(new Context(std::move(parent_context), offset));
     }
     // Adds a symbol to the current context.
-    void AddSymbol(const std::string& name, const TypeSpecifier& type);
+    int AddSymbol(const std::string& name, const TypeSpecifier& type);
     // Returns the symbol with the given name in the current context.
     const Symbol* GetSymbol(const std::string& name) const;
     // Checks if a symbol with the given name exists in the current context.
@@ -37,6 +37,10 @@ public:
     // Searches for a symbol in the current context and then in parent contexts.
     const Symbol* GetScopedSymbol(const std::string& name) const;
     std::string GetNewLabel();
+
+    void AddArray(const std::string& name, const TypeSpecifier& type, int size) {
+        symbol_table_.AddArray(name, type, size);
+    }
     ~Context() = default;
 };
 

@@ -43,4 +43,16 @@ std::vector<std::string> NodeList::GetIdentifiers() const
     }
     return identifiers;
 }
+
+void NodeList::EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+{
+    for (const auto& node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        node->EmitValueRISC(stream, context, destReg);
+    }
+}
 }

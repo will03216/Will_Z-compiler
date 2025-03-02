@@ -19,6 +19,7 @@ public:
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
     void Print(std::ostream& stream) const override;
     std::string GetIdentifier() const { return init_declarator_->GetIdentifier(); }
+    int IsArray() const { return init_declarator_->IsArray(); }
 
 };
 
@@ -26,23 +27,27 @@ class VariableCall : public Node
 {
 private:
      std::string identifier_;
+     NodePtr index_;
 public:
-    VariableCall(std::string identifier) : identifier_(identifier){};
+VariableCall(std::string identifier, NodePtr index) : identifier_(identifier), index_(std::move(index)) {};
+
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
     void Print(std::ostream& stream) const override;
     std::string GetIdentifier() const { return identifier_; }
+    int IsArray() const { return index_ ? 0 : -1; }
+    void EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
 };
 class VariableAssign : public Node
 {
     private:
-        std::string identifier_;
+        NodePtr identifier_;
         NodePtr expression_;
         std::string op_;
     public:
-        VariableAssign(std::string identifier, NodePtr expression, std::string op = "") : identifier_(identifier), expression_(std::move(expression)), op_(op) {};
+    VariableAssign(NodePtr identifier, NodePtr expression, std::string op = "") : identifier_(std::move(identifier)), expression_(std::move(expression)), op_(op) {};
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
         void Print(std::ostream& stream) const override;
-        std::string GetIdentifier() const { return identifier_; }
+        std::string GetIdentifier() const { return identifier_->GetIdentifier(); }
 };
 
 class VariablePostInc : public Node

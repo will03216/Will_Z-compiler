@@ -28,6 +28,7 @@ class SymbolTable
         const Symbol* GetSymbol(const std::string& name) const;
         bool HasSymbol(const std::string& name) const;
         int GetOffset() const;
+        int AddArray(const std::string& name, const TypeSpecifier& type, int size);
 
 };
 

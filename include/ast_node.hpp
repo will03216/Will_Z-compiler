@@ -17,6 +17,9 @@ public:
     virtual void Print(std::ostream& stream) const = 0;
     virtual std::string GetIdentifier() const { return ""; };
     virtual std::vector<std::string> GetIdentifiers() const { return {}; };
+    virtual int IsArray() const { return -1; };
+    virtual std::unique_ptr<const Node> GetValue() const { return nullptr; };
+    virtual void EmitValueRISC(std::ostream& , std::shared_ptr<Context> , std::string ) const {};
 };
 
 // If you don't feel comfortable using std::unique_ptr, you can switch NodePtr to be defined
@@ -38,6 +41,8 @@ public:
     virtual void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
     virtual void Print(std::ostream& stream) const override;
     virtual std::vector<std::string> GetIdentifiers() const override;
+    virtual void EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    //virtual std::unique_ptr<const Node> Clone() const override;
 };
 
 } // namespace ast

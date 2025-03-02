@@ -2,9 +2,9 @@
 
 namespace ast {
     int Context::label_counter_ = 1;
-    void Context::AddSymbol(const std::string& name, const TypeSpecifier& type)
+    int Context::AddSymbol(const std::string& name, const TypeSpecifier& type)
     {
-        symbol_table_.AddSymbol(name, type);
+        return symbol_table_.AddSymbol(name, type);
     }
     const Symbol* Context::GetSymbol(const std::string& name) const
     {
