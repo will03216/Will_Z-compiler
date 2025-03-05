@@ -83,7 +83,7 @@ About 6 hours each day
 | **Basic Features**                                           |                                           |         |                           |
 | A file containing just a single function with no arguments   |                   6 hrs                   |           |                           |
 | Variables of int type                                        |                   2 hrs                   |           |                           |
-| Local variables                                              |            Very long (20 hrs)             |           |                           |
+| Local variables                                              |                   10 hrs                  |           |                           |
 | Arithmetic and logical expressions                           |                   4 hrs                   |           |                           |
 | If-then-else statements                                      |                   1 hrs                   |           |                           |
 | While loops                                                  |                   1 hrs                   |          |                           |
