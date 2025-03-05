@@ -13,7 +13,7 @@ namespace ast {
         int index = 0;
         for (const auto& identifier : identifiers)
         {
-            context->AddSymbol(identifier,  TypeSpecifier::INT); //TODO Fix type
+            context->AddSymbol(identifier, TypeSpecifier::INT); //TODO Fix type
             int offset = context->GetSymbol(identifier)->offset;
             stream << "sw a"<< index <<", " << offset << "(s0)" << std::endl;
             index++;
