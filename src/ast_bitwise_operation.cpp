@@ -1,11 +1,19 @@
 #include "ast_bitwise_operation.hpp"
 
 namespace ast {
-    void BitwiseAndExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    void BitwiseAndExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
     {
-        lhs_->EmitRISC(stream, context, "a4");
-        rhs_->EmitRISC(stream, context, "a5");
-        stream << "and "<< destReg <<",a4,a5" << std::endl;
+        if (type == TypeSpecifier::INT)
+        {
+            lhs_->EmitRISC(stream, context, "a4", type);
+            rhs_->EmitRISC(stream, context, "a5", type);
+            stream << "and "<< destReg <<",a4,a5" << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("BitwiseAndExpr: TypeSpecifier not supported");
+        }
+
 
     }
     void BitwiseAndExpr::Print(std::ostream& stream) const
@@ -13,24 +21,36 @@ namespace ast {
         stream << "and lhs & rhs";
     }
 
-    void BitwiseInlcusiveOrExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    void BitwiseInlcusiveOrExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
     {
-        lhs_->EmitRISC(stream, context, "a4");
-        rhs_->EmitRISC(stream, context, "a5");
-        stream << "or "<< destReg <<",a4,a5" << std::endl;
-
+        if (type == TypeSpecifier::INT)
+        {
+            lhs_->EmitRISC(stream, context, "a4", type);
+            rhs_->EmitRISC(stream, context, "a5", type);
+            stream << "or "<< destReg <<",a4,a5" << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("BitwiseInlcusiveOrExpr: TypeSpecifier not supported");
+        }
     }
     void BitwiseInlcusiveOrExpr::Print(std::ostream& stream) const
     {
         stream << "or lhs | rhs";
     }
 
-    void BitwiseExclusiveOrExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    void BitwiseExclusiveOrExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
     {
-        lhs_->EmitRISC(stream, context, "a4");
-        rhs_->EmitRISC(stream, context, "a5");
-        stream << "xor "<< destReg <<",a4,a5" << std::endl;
-
+        if (type == TypeSpecifier::INT)
+        {
+            lhs_->EmitRISC(stream, context, "a4", type);
+            rhs_->EmitRISC(stream, context, "a5", type);
+            stream << "xor "<< destReg <<",a4,a5" << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("BitwiseExclusiveOrExpr: TypeSpecifier not supported");
+        }
     }
     void BitwiseExclusiveOrExpr::Print(std::ostream& stream) const
     {

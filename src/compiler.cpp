@@ -72,7 +72,7 @@ void Compile(const NodePtr& root, const std::string& compile_output_path)
     std::cout << "Compiling parsed AST..." << std::endl;
 
     std::ofstream output(compile_output_path, std::ios::trunc);
-    root->EmitRISC(output, ctx, "a5");
+    root->EmitRISC(output, ctx, "a5", ast::TypeSpecifier::INT);
 
     std::cout << "Compiled to: " << compile_output_path << std::endl;
 }

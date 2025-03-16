@@ -13,7 +13,7 @@ private:
 public:
     BitwiseAndExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
 };
 
@@ -26,7 +26,7 @@ private:
 public:
     BitwiseInlcusiveOrExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
 };
 
@@ -39,7 +39,7 @@ private:
 public:
     BitwiseExclusiveOrExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
 };
 

@@ -2,6 +2,7 @@
 
 namespace ast {
     int Context::label_counter_ = 1;
+    std::unordered_map<std::string, std::vector<TypeSpecifier>> Context::function_parameters_;
     int Context::AddSymbol(const std::string& name, const TypeSpecifier& type)
     {
         return symbol_table_.AddSymbol(name, type);

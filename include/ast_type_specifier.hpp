@@ -7,7 +7,11 @@ namespace ast {
 
 enum class TypeSpecifier
 {
-    INT
+
+    INT,
+    FLOAT,
+    DOUBLE,
+    VOID
 };
 
 template<typename LogStream>
@@ -18,6 +22,12 @@ LogStream& operator<<(LogStream& ls, const TypeSpecifier& type)
         {
         case TypeSpecifier::INT:
             return "int";
+        case TypeSpecifier::FLOAT:
+            return "float";
+        case TypeSpecifier::DOUBLE:
+            return "double";
+        case TypeSpecifier::VOID:
+            return "void";
         }
         throw std::runtime_error("Unexpected type specifier");
     };

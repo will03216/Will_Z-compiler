@@ -65,6 +65,7 @@ translation_unit
 
 external_declaration
 	: function_definition { $$ = $1; }
+	| declaration { $$ = $1; } // Add global variables later
 	;
 
 function_definition
@@ -88,6 +89,16 @@ type_specifier
 	: INT {
 		$$ = TypeSpecifier::INT;
 	}
+	| VOID {
+		$$ = TypeSpecifier::VOID;
+	}
+	| FLOAT {
+		$$ = TypeSpecifier::FLOAT;
+	}
+	| DOUBLE {
+		$$ = TypeSpecifier::DOUBLE;
+	}
+
 	;
 
 init_declarator
@@ -123,11 +134,11 @@ constant_expression
 	;
 parameter_list
 	: parameter_declaration { $$ = new NodeList(NodePtr($1)); }
-	//fix this
+
 	| parameter_list ',' parameter_declaration { $1->PushBack(NodePtr($3)); $$=$1; }
 	;
 parameter_declaration
-	: declaration_specifiers declarator { $$ = $2; }
+	: declaration_specifiers declarator { $$ = new Parameter($1, NodePtr($2)); }
 	;
 
 statement
@@ -164,6 +175,7 @@ primary_expression
 	}
      | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
 	 | '(' expression ')' { $$ = $2; }
+	 | FLOAT_CONSTANT { $$ = new FloatConstant($1); }
 	;
 
 postfix_expression

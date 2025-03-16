@@ -1,10 +1,11 @@
 #include "ast_variable.hpp"
 #include <string>
+
 namespace ast {
-    void VariableDeclare::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string ) const
+
+    void VariableDeclare::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier ) const
     {
         if (init_declarator_->IsArray() == -1)
-
         {
             std::string identifier = init_declarator_->GetIdentifier();
             if (context->HasSymbol(identifier))
@@ -12,8 +13,26 @@ namespace ast {
                 throw std::runtime_error("Variable already declared");
             }
             int offset = context->AddSymbol(identifier, declaration_specifiers_);
-            init_declarator_->EmitRISC(stream, context, "a5");
-            stream << "sw a5, " << offset << "(s0)" << std::endl;
+
+            if (declaration_specifiers_ == TypeSpecifier::INT)
+            {
+                init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::INT);
+                stream << "sw a5, " << offset << "(s0)" << std::endl;
+            }
+            else if (declaration_specifiers_ == TypeSpecifier::FLOAT)
+            {
+                init_declarator_->EmitRISC(stream, context, "fa5", TypeSpecifier::FLOAT);
+                stream << "fsw fa5, " << offset << "(s0)" << std::endl;
+            }
+            else if (declaration_specifiers_ == TypeSpecifier::DOUBLE)
+            {
+                init_declarator_->EmitRISC(stream, context, "fa5", TypeSpecifier::DOUBLE);
+                stream << "fsd fa5, " << offset << "(s0)" << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("VariableDeclare: TypeSpecifier not supported");
+            }
         }
         else {
             std::string identifier = init_declarator_->GetIdentifier();
@@ -23,7 +42,6 @@ namespace ast {
             }
             context->AddArray(identifier, declaration_specifiers_, init_declarator_->IsArray());
         }
-
 
     }
 
@@ -37,19 +55,35 @@ namespace ast {
             stream << "int " << init_declarator_->GetIdentifier() << "[" << init_declarator_->IsArray() << "];" << std::endl;
         }
     }
-    void VariableCall::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+
+    void VariableCall::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier) const
     {
         if (index_ == nullptr)
         {
-            int offset = context->GetScopedSymbol(identifier_)->offset;
-            stream << "lw "<< destReg <<", " << offset << "(s0)" << std::endl;
+            Symbol symbol = *context->GetScopedSymbol(identifier_);
+            if (symbol.type == TypeSpecifier::INT)
+            {
+                stream << "lw "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::FLOAT)
+            {
+                stream << "flw "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::DOUBLE)
+            {
+                stream << "fld "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("VariableCall: TypeSpecifier not supported");
+            }
         }
         else
         {
             // ensure a4 is not lost if it is an lhs (temp solution, think of a better way to do this)
             stream << "add sp, sp, -4" << std::endl;
             stream << "sw a4, 0(sp)" << std::endl;
-            index_->EmitRISC(stream, context, "t1");
+            index_->EmitRISC(stream, context, "t1", TypeSpecifier::INT);
             stream << "li t0, -4" << std::endl;
             stream << "mul t1, t1, t0" << std::endl;
             //only implementing int array
@@ -66,10 +100,9 @@ namespace ast {
         //stream << "lw "<< destReg <<", " << offset << "(s0)" << std::endl;
     }
 
-
-
     void VariableCall::Print(std::ostream& stream) const
     {
+
         if(index_ == nullptr)
         {
             stream << identifier_;
@@ -81,6 +114,9 @@ namespace ast {
             stream << "]";
         }
     }
+
+
+    // There may be issues if the index is an array call
     void VariableCall::EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
     {
         if (index_ == nullptr)
@@ -93,7 +129,7 @@ namespace ast {
         {
             stream << "add sp, sp, -4" << std::endl;
             stream << "sw a4, 0(sp)" << std::endl;
-            index_->EmitRISC(stream, context, "t1");
+            index_->EmitRISC(stream, context, "t1", TypeSpecifier::INT);
             stream << "li t0, -4" << std::endl;
             stream << "mul t1, t1, t0" << std::endl;
             //only implementing int array
@@ -107,13 +143,15 @@ namespace ast {
         }
     }
 
-    void VariableAssign::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    void VariableAssign::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
+
+        Symbol symbol = *context->GetScopedSymbol(identifier_->GetIdentifier());
         if (identifier_->IsArray() == -1)
         {
             // gets the offset of the variable and moves it into a3
-            int offset = context->GetScopedSymbol(identifier_->GetIdentifier())->offset;
-            stream << "li t2, " << offset << std::endl;
+            stream << "li t2, " << symbol.offset << std::endl;
+
             stream  << "add t2, t2, s0" << std::endl;
         }
         else
@@ -122,34 +160,110 @@ namespace ast {
             identifier_->EmitValueRISC(stream, context, "t2");
         }
 
-        expression_->EmitRISC(stream, context, destReg);
-        if (op_ == "+=")
+        if (symbol.type == TypeSpecifier::INT)
+
+
+
+
+
+
         {
-            stream << "lw t0, 0(t2)" << std::endl;
-            stream << "add " << destReg << ", "<< destReg <<", t0" << std::endl;
+
+            if (op_ != "="){
+                stream << "lw t0, 0(t2)" << std::endl;
+            }
+
+            expression_->EmitRISC(stream, context, destReg, symbol.type);
+            if (op_ == "+=")
+            {
+                stream << "add " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+            else if (op_ == "-=")
+            {
+                stream << "sub "<< destReg <<", t0, "<< destReg << std::endl;
+            }
+            else if (op_ == "*=")
+            {
+                stream << "mul " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+            else if (op_ == "/=")
+            {
+                stream << "div " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+            else if (op_ == "%=")
+            {
+                stream << "rem " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+
+            stream << "sw " << destReg <<", 0(t2)" << std::endl;
         }
-        else if (op_ == "-=")
+        else if (symbol.type == TypeSpecifier::FLOAT)
         {
-            stream << "lw t0, 0(t2)" << std::endl;
-            stream << "sub "<< destReg <<", t0, "<< destReg << std::endl;
+            if (op_ != "="){
+                stream << "flw ft0, 0(ft2)" << std::endl;
+            }
+
+            expression_->EmitRISC(stream, context, destReg, symbol.type);
+            if (op_ == "+=")
+            {
+                stream << "fadd.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+            }
+            else if (op_ == "-=")
+            {
+                stream << "fsub.s "<< destReg <<", ft0, "<< destReg << std::endl;
+            }
+            else if (op_ == "*=")
+            {
+                stream << "fmul.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+            }
+            else if (op_ == "/=")
+            {
+                stream << "fdiv.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+            }
+            else if (op_ == "%=")
+            {
+                throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
+            }
+
+            stream << "fsw " << destReg <<", 0(t2)" << std::endl;
         }
-        else if (op_ == "*=")
+        else if (symbol.type == TypeSpecifier::DOUBLE)
         {
-            stream << "lw t0, 0(t2)" << std::endl;
-            stream << "mul " << destReg << ", "<< destReg <<", t0" << std::endl;
+            if (op_ != "="){
+                stream << "flw ft0, 0(ft2)" << std::endl;
+            }
+
+            expression_->EmitRISC(stream, context, destReg, symbol.type);
+            if (op_ == "+=")
+            {
+                stream << "fadd.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+            }
+            else if (op_ == "-=")
+            {
+                stream << "fsub.s "<< destReg <<", ft0, "<< destReg << std::endl;
+            }
+            else if (op_ == "*=")
+            {
+                stream << "fmul.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+            }
+            else if (op_ == "/=")
+            {
+                stream << "fdiv.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+            }
+            else if (op_ == "%=")
+            {
+                throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
+            }
+
+            stream << "fsd " << destReg <<", 0(t2)" << std::endl;
         }
-        else if (op_ == "/=")
+        else
         {
-            stream << "lw t0, 0(t2)" << std::endl;
-            stream << "div " << destReg << ", "<< destReg <<", t0" << std::endl;
-        }
-        else if (op_ == "%=")
-        {
-            stream << "lw t0, 0(t2)" << std::endl;;
-            stream << "rem " << destReg << ", "<< destReg <<", t0" << std::endl;
+            throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
+
         }
 
-        stream << "sw " << destReg <<", 0(t2)" << std::endl;
+
     }
 
     void VariableAssign::Print(std::ostream& stream) const
@@ -157,17 +271,35 @@ namespace ast {
         stream << identifier_;
         stream << " = ";
         expression_->Print(stream);
-
         stream << ";" << std::endl;
     }
 
-
-    void VariablePostInc::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    //change later
+    void VariablePostInc::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        int offset = context->GetScopedSymbol(identifier_)->offset;
-        stream << "lw " << destReg << ", " << offset << "(s0)" << std::endl;
-        stream << "addi t0, " << destReg << ", 1" << std::endl;
-        stream << "sw t0, " << offset << "(s0)" << std::endl;
+        Symbol symbol = *context->GetScopedSymbol(identifier_);
+        if (symbol.type == TypeSpecifier::INT)
+        {
+            stream << "lw " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "addi t0, " << destReg << ", 1" << std::endl;
+            stream << "sw t0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else if (symbol.type == TypeSpecifier::FLOAT)
+        {
+            stream << "flw " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "fadd.s ft0, " << destReg << ", 1" << std::endl;
+            stream << "fsw ft0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else if (symbol.type == TypeSpecifier::DOUBLE)
+        {
+            stream << "fld " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "fadd.d ft0, " << destReg << ", 1" << std::endl;
+            stream << "fsd ft0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("VariablePostInc: TypeSpecifier not supported");
+        }
     }
 
     void VariablePostInc::Print(std::ostream& stream) const
@@ -176,12 +308,31 @@ namespace ast {
         stream << "++";
     }
 
-    void VariablePostDec::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+    void VariablePostDec::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier) const
     {
-        int offset = context->GetScopedSymbol(identifier_)->offset;
-        stream << "lw " << destReg << ", " << offset << "(s0)" << std::endl;
-        stream << "addi t0, " << destReg << ", -1" << std::endl;
-        stream << "sw t0, " << offset << "(s0)" << std::endl;
+        Symbol symbol = *context->GetScopedSymbol(identifier_);
+        if (symbol.type == TypeSpecifier::INT)
+        {
+            stream << "lw " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "addi t0, " << destReg << ", -1" << std::endl;
+            stream << "sw t0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else if (symbol.type == TypeSpecifier::FLOAT)
+        {
+            stream << "flw " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "fadd.s ft0, " << destReg << ", -1" << std::endl;
+            stream << "fsw ft0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else if (symbol.type == TypeSpecifier::DOUBLE)
+        {
+            stream << "fld " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "fadd.d ft0, " << destReg << ", -1" << std::endl;
+            stream << "fsd ft0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else
+        {
+            throw std::runtime_error("VariablePostInc: TypeSpecifier not supported");
+        }
     }
 
     void VariablePostDec::Print(std::ostream& stream) const
@@ -189,6 +340,5 @@ namespace ast {
         stream << identifier_;
         stream << "--";
     }
-
 
 } // namespace ast

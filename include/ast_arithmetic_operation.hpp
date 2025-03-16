@@ -14,7 +14,7 @@ namespace ast
     public:
         AddExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -27,7 +27,7 @@ namespace ast
     public:
         SubExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -40,7 +40,7 @@ namespace ast
     public:
         MulExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -53,7 +53,7 @@ namespace ast
     public:
         DivExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -66,7 +66,7 @@ namespace ast
     public:
         ModExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -79,7 +79,7 @@ namespace ast
     public:
         LeftShiftExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -92,7 +92,7 @@ namespace ast
     public:
         RightShiftExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
 
     };
@@ -105,7 +105,7 @@ private:
 public:
     Negation(NodePtr expression) : expression_(std::move(expression)) {}
 
-    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
 };
 

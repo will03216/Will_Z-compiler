@@ -17,8 +17,22 @@ public:
     }
 
     void PushBack(NodePtr argument);
-    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
+};
+
+class Parameter : public Node
+{
+private:
+    TypeSpecifier type_;
+    NodePtr identifier_;
+public:
+    Parameter(TypeSpecifier type, NodePtr identifier) : type_(type), identifier_(std::move(identifier)) {}
+
+    void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
+    void Print(std::ostream& stream) const override;
+    std::string GetIdentifier() const override;
+    TypeSpecifier GetType() const override;
 };
 
 } // namespace ast

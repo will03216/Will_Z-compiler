@@ -7,7 +7,7 @@ void NodeList::PushBack(NodePtr item)
     nodes_.push_back(std::move(item));
 }
 
-void NodeList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
+void NodeList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
 {
     for (const auto& node : nodes_)
     {
@@ -15,7 +15,7 @@ void NodeList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, 
         {
             continue;
         }
-        node->EmitRISC(stream, context, destReg);
+        node->EmitRISC(stream, context, destReg, type);
     }
 }
 
@@ -54,5 +54,19 @@ void NodeList::EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> cont
         }
         node->EmitValueRISC(stream, context, destReg);
     }
+}
+std::vector<TypeSpecifier> NodeList::GetTypes() const
+
+{
+    std::vector<TypeSpecifier> types;
+    for (const auto& node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        types.push_back(node->GetType());
+    }
+    return types;
 }
 }

@@ -3,6 +3,9 @@
 #include <ast_symbol_table.hpp>
 #include <memory>
 #include <string>
+#include <unordered_map>
+#include <vector>
+#include "ast_type_specifier.hpp"
 
 namespace ast {
 class Context : public std::enable_shared_from_this<Context>
@@ -11,6 +14,8 @@ private:
     std::shared_ptr<Context> parent_context_;
     SymbolTable symbol_table_;
     static int label_counter_ ;
+    static std::unordered_map<std::string, std::vector<TypeSpecifier>> function_parameters_;
+    std::string function_call_name_;
     // Private constructor to enforce shared_ptr management
     explicit Context(std::shared_ptr<Context> parent_context = nullptr, int offset = -20)
         : parent_context_(std::move(parent_context)), symbol_table_(SymbolTable(offset)) {}
@@ -41,6 +46,22 @@ public:
     void AddArray(const std::string& name, const TypeSpecifier& type, int size) {
         symbol_table_.AddArray(name, type, size);
     }
+    void AddFunction(const std::string& name, const std::vector<TypeSpecifier>& parameters) {
+        function_parameters_[name] = parameters;
+    }
+
+    const std::vector<TypeSpecifier>& GetFunctionParameters(const std::string& name) {
+        return function_parameters_[name];
+    }
+
+    void SetFunctionCallName(const std::string& name) {
+        function_call_name_ = name;
+    }
+
+    const std::string& GetFunctionCallName() const {
+        return function_call_name_;
+    }
+
     ~Context() = default;
 };
 

@@ -14,7 +14,7 @@ namespace ast
     public:
         LessThanExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -27,7 +27,7 @@ namespace ast
     public:
         GreaterThanExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -40,7 +40,7 @@ namespace ast
     public:
         LessThanEqualExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -53,7 +53,7 @@ namespace ast
     public:
         GreaterThanEqualExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -66,7 +66,7 @@ namespace ast
     public:
         EqualityExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
     class InequalityExpr : public Node
@@ -78,7 +78,7 @@ namespace ast
     public:
         InequalityExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -91,7 +91,7 @@ namespace ast
     public:
         LogicalAndExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
@@ -104,7 +104,7 @@ namespace ast
     public:
         LogicalOrExpr(NodePtr lhs, NodePtr rhs) : lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
-        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
+        void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
     };
 
