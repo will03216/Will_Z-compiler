@@ -8,6 +8,7 @@
 #include "ast_context.hpp"
 #include "ast_type_specifier.hpp"
 #include "ast_symbol_table.hpp"
+#include "ast_type_checker.hpp"
 
 namespace ast {
 

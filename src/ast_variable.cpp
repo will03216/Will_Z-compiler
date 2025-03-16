@@ -61,6 +61,8 @@ namespace ast {
         if (index_ == nullptr)
         {
             Symbol symbol = *context->GetScopedSymbol(identifier_);
+            type_checker_->SetType(symbol.type);
+
             if (symbol.type == TypeSpecifier::INT)
             {
                 stream << "lw "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
@@ -83,13 +85,13 @@ namespace ast {
             // ensure a4 is not lost if it is an lhs (temp solution, think of a better way to do this)
             stream << "add sp, sp, -4" << std::endl;
             stream << "sw a4, 0(sp)" << std::endl;
-            index_->EmitRISC(stream, context, "t1", TypeSpecifier::INT);
+            index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
             stream << "li t0, -4" << std::endl;
-            stream << "mul t1, t1, t0" << std::endl;
+            stream << "mul a1, a1, t0" << std::endl;
             //only implementing int array
             int offset = context->GetScopedSymbol(identifier_)->offset;
             stream << "li t0, " << offset << std::endl;
-            stream << "add "<< destReg <<", t1, t0" << std::endl; // store the address of the array in a3 for use later (need to save this later)
+            stream << "add "<< destReg <<", a1, t0" << std::endl; // store the address of the array in a3 for use later (need to save this later)
             stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
             stream << "lw "<< destReg <<", 0("<< destReg <<")" << std::endl;
             stream << "lw a4, 0(sp)" << std::endl;
@@ -129,13 +131,13 @@ namespace ast {
         {
             stream << "add sp, sp, -4" << std::endl;
             stream << "sw a4, 0(sp)" << std::endl;
-            index_->EmitRISC(stream, context, "t1", TypeSpecifier::INT);
+            index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
             stream << "li t0, -4" << std::endl;
-            stream << "mul t1, t1, t0" << std::endl;
+            stream << "mul a1, a1, t0" << std::endl;
             //only implementing int array
             int offset = context->GetScopedSymbol(identifier_)->offset;
             stream << "li t0, " << offset << std::endl;
-            stream << "add "<< destReg <<", t1, t0" << std::endl; // store the address of the array in a3 for use later (need to save this later)
+            stream << "add "<< destReg <<", a1, t0" << std::endl; // store the address of the array in a3 for use later (need to save this later)
             stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
             //is this necessary here?
             stream << "lw a4, 0(sp)" << std::endl;
@@ -150,27 +152,20 @@ namespace ast {
         if (identifier_->IsArray() == -1)
         {
             // gets the offset of the variable and moves it into a3
-            stream << "li t2, " << symbol.offset << std::endl;
-
-            stream  << "add t2, t2, s0" << std::endl;
+            stream << "li a2, " << symbol.offset << std::endl;
+            stream  << "add a2, a2, s0" << std::endl;
         }
         else
         {
             // get the address of the array into a3
-            identifier_->EmitValueRISC(stream, context, "t2");
+            identifier_->EmitValueRISC(stream, context, "a2");
         }
 
         if (symbol.type == TypeSpecifier::INT)
-
-
-
-
-
-
         {
 
             if (op_ != "="){
-                stream << "lw t0, 0(t2)" << std::endl;
+                stream << "lw t0, 0(a2)" << std::endl;
             }
 
             expression_->EmitRISC(stream, context, destReg, symbol.type);
@@ -195,12 +190,12 @@ namespace ast {
                 stream << "rem " << destReg << ", "<< destReg <<", t0" << std::endl;
             }
 
-            stream << "sw " << destReg <<", 0(t2)" << std::endl;
+            stream << "sw " << destReg <<", 0(a2)" << std::endl;
         }
         else if (symbol.type == TypeSpecifier::FLOAT)
         {
             if (op_ != "="){
-                stream << "flw ft0, 0(ft2)" << std::endl;
+                stream << "flw ft0, 0(a2)" << std::endl;
             }
 
             expression_->EmitRISC(stream, context, destReg, symbol.type);
@@ -225,12 +220,12 @@ namespace ast {
                 throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
             }
 
-            stream << "fsw " << destReg <<", 0(t2)" << std::endl;
+            stream << "fsw " << destReg <<", 0(a2)" << std::endl;
         }
         else if (symbol.type == TypeSpecifier::DOUBLE)
         {
             if (op_ != "="){
-                stream << "flw ft0, 0(ft2)" << std::endl;
+                stream << "flw ft0, 0(a2)" << std::endl;
             }
 
             expression_->EmitRISC(stream, context, destReg, symbol.type);
@@ -255,14 +250,12 @@ namespace ast {
                 throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
             }
 
-            stream << "fsd " << destReg <<", 0(t2)" << std::endl;
+            stream << "fsd " << destReg <<", 0(a2)" << std::endl;
         }
         else
         {
             throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
-
         }
-
 
     }
 

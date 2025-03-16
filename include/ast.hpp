@@ -21,4 +21,5 @@
 #include "ast_iteration_statement.hpp"
 #include "ast_argument_list.hpp"
 #include "ast_bitwise_operation.hpp"
+# include "ast_type_specifier.hpp"
 ast::NodePtr ParseAST(std::string file_name);
