@@ -3,10 +3,31 @@
 namespace ast {
     int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type)
     {
-        table_[name] = {name, type, offset_};
-        int temp = offset_;
-        offset_ -= 4;
-        return temp;
+        if (type == TypeSpecifier::INT)
+        {
+            table_[name] = {name, type, offset_};
+            int temp = offset_;
+            offset_ -= 4;
+            return temp;
+        }
+        else if (type == TypeSpecifier::FLOAT)
+        {
+            table_[name] = {name, type, offset_};
+            int temp = offset_;
+            offset_ -= 4;
+            return temp;
+        }
+        else if (type == TypeSpecifier::DOUBLE)
+        {
+            table_[name] = {name, type, offset_};
+            int temp = offset_;
+            offset_ -= 8;
+            return temp;
+        }
+        else
+        {
+            throw std::runtime_error("SymbolTable: TypeSpecifier not supported");
+        }
     }
     const Symbol* SymbolTable::GetSymbol(const std::string& name) const
     {

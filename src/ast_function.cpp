@@ -4,7 +4,14 @@ namespace ast {
 
     void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
 {
-    context->AddFunction(declarator_->GetIdentifier(), declarator_->GetTypes());
+    if ( compound_statement_ == nullptr)
+    {
+        context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes());
+        return;
+    }
+
+    context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes());
+    context->SetCurrentFunction(declarator_->GetIdentifier());
 
     TypeSpecifier type = declaration_specifiers_;
     std::string function_name = declarator_->GetIdentifier();
@@ -31,14 +38,7 @@ namespace ast {
     if (compound_statement_ != nullptr)
     {
         std::string reg = "a5";
-        if (type == TypeSpecifier::FLOAT)
-        {
-            reg = "fa5";
-        }
-        else if (type == TypeSpecifier::DOUBLE)
-        {
-            reg = "fa5";
-        }
+
         compound_statement_->EmitRISC(stream, function_context, reg, type);
     }
 }

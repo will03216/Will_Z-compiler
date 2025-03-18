@@ -16,6 +16,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
     };
 
     class SubExpr : public Node
@@ -29,6 +30,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
     };
 
     class MulExpr : public Node
@@ -42,6 +44,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
     };
 
     class DivExpr : public Node
@@ -55,6 +58,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
     };
 
     class ModExpr : public Node
@@ -68,6 +72,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
     };
 
     class LeftShiftExpr : public Node
@@ -81,6 +86,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
     };
 
     class RightShiftExpr : public Node
@@ -94,6 +100,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return lhs_->GetType(); }
 
     };
 
@@ -107,6 +114,7 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
+    TypeSpecifier GetType() const override { return expression_->GetType(); }
 };
 
 

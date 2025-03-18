@@ -2,7 +2,7 @@
 
 namespace ast {
 
-    void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
+void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
 {
     //TypeSpecifier type = context->GetFunctionType();
 
@@ -12,6 +12,7 @@ namespace ast {
             expression_->EmitRISC(stream, context, "a5", type);
         }
         stream << "mv a0,a5" << std::endl;
+        //context->ExitRegStack(stream);
         exit_scope(stream);
         stream << "ret" << std::endl;
     }
@@ -19,9 +20,10 @@ namespace ast {
     {
         if (expression_ != nullptr)
         {
-            expression_->EmitRISC(stream, context, "fa5", type);
+            expression_->EmitRISC(stream, context, "a5", type);
         }
         stream << "fmv.s fa0,fa5" << std::endl;
+        //context->ExitRegStack(stream);
         exit_scope(stream);
         stream << "ret" << std::endl;
     }
@@ -29,14 +31,16 @@ namespace ast {
     {
         if (expression_ != nullptr)
         {
-            expression_->EmitRISC(stream, context, "fa5", type);
+            expression_->EmitRISC(stream, context, "a5", type);
         }
         stream << "fmv.d fa0,fa5" << std::endl;
+        //context->ExitRegStack(stream);
         exit_scope(stream);
         stream << "ret" << std::endl;
     }
     else if (type == TypeSpecifier::VOID)
     {
+        context->ExitRegStack(stream);
         exit_scope(stream);
         stream << "ret" << std::endl;
     }
@@ -44,10 +48,8 @@ namespace ast {
     {
         throw std::runtime_error("ReturnStatement: TypeSpecifier not supported");
     }
-
-
-
 }
+
 void ReturnStatement::Print(std::ostream& stream) const
 {
     stream << "return";

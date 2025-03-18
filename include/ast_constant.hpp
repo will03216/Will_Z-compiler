@@ -14,6 +14,7 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
+    TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
 };
 
 class FloatConstant : public Node
@@ -26,6 +27,7 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
+    TypeSpecifier GetType() const override { return TypeSpecifier::FLOAT; }
 };
 
 class DoubleConstant : public Node
@@ -38,6 +40,7 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
+    TypeSpecifier GetType() const override { return TypeSpecifier::DOUBLE; }
 };
 
 } // namespace ast

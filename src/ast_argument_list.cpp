@@ -4,7 +4,7 @@ namespace ast {
     void ArgumentExpressionList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier) const
     {
         std::string function_name = context->GetFunctionCallName();
-        std::vector<TypeSpecifier> parameters = context->GetFunctionParameters(function_name);
+        std::vector<TypeSpecifier> parameters = context->GetFunction(function_name)->parameters;
         bool is_external = false;
 
         if (parameters.size() == 0 && arguments_.size() != 0)
@@ -38,12 +38,12 @@ namespace ast {
         }
         else if (type == TypeSpecifier::FLOAT)
         {
-            stream << "fmv.s fa" << index_float << ", " << destReg << std::endl;
+            stream << "fmv.s fa" << index_float << ", f" << destReg << std::endl;
             index_float++;
         }
         else if (type == TypeSpecifier::DOUBLE)
         {
-            stream << "fmv.d fa" << index_float << ", " << destReg << std::endl;
+            stream << "fmv.d fa" << index_float << ", f" << destReg << std::endl;
             index_float++;
         }
         else

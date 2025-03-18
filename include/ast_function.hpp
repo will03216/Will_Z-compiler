@@ -17,6 +17,7 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
+    TypeSpecifier GetType() const override { return declaration_specifiers_; }
 
 };
 

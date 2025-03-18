@@ -16,6 +16,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
     class GreaterThanExpr : public Node
@@ -29,6 +30,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
     class LessThanEqualExpr : public Node
@@ -42,6 +44,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
     class GreaterThanEqualExpr : public Node
@@ -55,6 +58,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
     class EqualityExpr : public Node
@@ -68,6 +72,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
     class InequalityExpr : public Node
     {
@@ -80,6 +85,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
     class LogicalAndExpr : public Node
@@ -93,6 +99,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
     class LogicalOrExpr : public Node
@@ -106,6 +113,7 @@ namespace ast
 
         void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type ) const override;
         void Print(std::ostream &stream) const override;
+        TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
     };
 
 } // namespace ast

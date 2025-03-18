@@ -1,18 +1,17 @@
 #include "ast_iteration_statement.hpp"
 
-namespace ast
-{
-    void WhileStatement::EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
+namespace ast {
+    void WhileStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type ) const
     {
         std::string type_reg = "a5";
-        if (type == TypeSpecifier::FLOAT)
-        {
-            type_reg = "fa5";
-        }
-        else if (type == TypeSpecifier::DOUBLE)
-        {
-            type_reg = "fa5";
-        }
+
+
+
+
+
+
+
+
 
         std::string loop_label = context->GetNewLabel();
         std::string condition_label = context->GetNewLabel();
@@ -23,9 +22,11 @@ namespace ast
         stream << condition_label << ":" << std::endl;
         condition_->EmitRISC(stream, context, "a5", type);
         stream << "bnez a5, " << loop_label << std::endl;
+
+
     }
 
-    void WhileStatement::Print(std::ostream &stream) const
+    void WhileStatement::Print(std::ostream& stream) const
     {
         stream << "while (";
         condition_->Print(stream);
@@ -34,17 +35,17 @@ namespace ast
         stream << "}" << std::endl;
     }
 
-    void DoWhileStatement::EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
+    void DoWhileStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type ) const
     {
         std::string type_reg = "a5";
-        if (type == TypeSpecifier::FLOAT)
-        {
-            type_reg = "fa5";
-        }
-        else if (type == TypeSpecifier::DOUBLE)
-        {
-            type_reg = "fa5";
-        }
+
+
+
+
+
+
+
+
 
         std::string loop_label = context->GetNewLabel();
         std::string condition_label = context->GetNewLabel();
@@ -56,7 +57,7 @@ namespace ast
         stream << "bnez a5, " << loop_label << std::endl;
     }
 
-    void DoWhileStatement::Print(std::ostream &stream) const
+    void DoWhileStatement::Print(std::ostream& stream) const
     {
         stream << "do {" << std::endl;
         loop_statement_->Print(stream);
@@ -65,17 +66,17 @@ namespace ast
         stream << ");" << std::endl;
     }
 
-    void ForStatement::EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
+    void ForStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type ) const
     {
         std::string type_reg = "a5";
-        if (type == TypeSpecifier::FLOAT)
-        {
-            type_reg = "fa5";
-        }
-        else if (type == TypeSpecifier::DOUBLE)
-        {
-            type_reg = "fa5";
-        }
+
+
+
+
+
+
+
+
 
         std::string loop_label = context->GetNewLabel();
         std::string condition_label = context->GetNewLabel();
@@ -94,7 +95,8 @@ namespace ast
         condition_->EmitRISC(stream, context, "a5", TypeSpecifier::INT);
         stream << "bnez a5, " << loop_label << std::endl;
     }
-    void ForStatement::Print(std::ostream &stream) const
+
+    void ForStatement::Print(std::ostream& stream) const
     {
         stream << "for (";
         init_statement_->Print(stream);
@@ -107,17 +109,17 @@ namespace ast
         stream << "}" << std::endl;
     }
 
-    void ForInitStatement::EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
+    void ForInitStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type ) const
     {
         std::string type_reg = "a5";
-        if (type == TypeSpecifier::FLOAT)
-        {
-            type_reg = "fa5";
-        }
-        else if (type == TypeSpecifier::DOUBLE)
-        {
-            type_reg = "fa5";
-        }
+
+
+
+
+
+
+
+
 
         std::string loop_label = context->GetNewLabel();
         std::string condition_label = context->GetNewLabel();
@@ -134,7 +136,7 @@ namespace ast
         stream << "bnez a5, " << loop_label << std::endl;
     }
 
-    void ForInitStatement::Print(std::ostream &stream) const
+    void ForInitStatement::Print(std::ostream& stream) const
     {
         stream << "for (";
         init_statement_->Print(stream);
@@ -146,5 +148,6 @@ namespace ast
         loop_statement_->Print(stream);
         stream << "}" << std::endl;
     }
+
 
 } // namespace ast

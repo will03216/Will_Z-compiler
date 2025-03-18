@@ -21,12 +21,12 @@ namespace ast {
             }
             else if (declaration_specifiers_ == TypeSpecifier::FLOAT)
             {
-                init_declarator_->EmitRISC(stream, context, "fa5", TypeSpecifier::FLOAT);
+                init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::FLOAT);
                 stream << "fsw fa5, " << offset << "(s0)" << std::endl;
             }
             else if (declaration_specifiers_ == TypeSpecifier::DOUBLE)
             {
-                init_declarator_->EmitRISC(stream, context, "fa5", TypeSpecifier::DOUBLE);
+                init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::DOUBLE);
                 stream << "fsd fa5, " << offset << "(s0)" << std::endl;
             }
             else
@@ -69,11 +69,11 @@ namespace ast {
             }
             else if (symbol.type == TypeSpecifier::FLOAT)
             {
-                stream << "flw "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+                stream << "flw f"<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
             }
             else if (symbol.type == TypeSpecifier::DOUBLE)
             {
-                stream << "fld "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+                stream << "fld f"<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
             }
             else
             {
@@ -201,56 +201,56 @@ namespace ast {
             expression_->EmitRISC(stream, context, destReg, symbol.type);
             if (op_ == "+=")
             {
-                stream << "fadd.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+                stream << "fadd.s f" << destReg << ", f"<< destReg <<", ft0" << std::endl;
             }
             else if (op_ == "-=")
             {
-                stream << "fsub.s "<< destReg <<", ft0, "<< destReg << std::endl;
+                stream << "fsub.s f"<< destReg <<", ft0, f"<< destReg << std::endl;
             }
             else if (op_ == "*=")
             {
-                stream << "fmul.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+                stream << "fmul.s f" << destReg << ", f"<< destReg <<", ft0" << std::endl;
             }
             else if (op_ == "/=")
             {
-                stream << "fdiv.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+                stream << "fdiv.s f" << destReg << ", f"<< destReg <<", ft0" << std::endl;
             }
             else if (op_ == "%=")
             {
                 throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
             }
 
-            stream << "fsw " << destReg <<", 0(a2)" << std::endl;
+            stream << "fsw f" << destReg <<", 0(a2)" << std::endl;
         }
         else if (symbol.type == TypeSpecifier::DOUBLE)
         {
             if (op_ != "="){
-                stream << "flw ft0, 0(a2)" << std::endl;
+                stream << "fld ft0, 0(a2)" << std::endl;
             }
 
             expression_->EmitRISC(stream, context, destReg, symbol.type);
             if (op_ == "+=")
             {
-                stream << "fadd.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+                stream << "fadd.d f" << destReg << ", "<< destReg <<", ft0" << std::endl;
             }
             else if (op_ == "-=")
             {
-                stream << "fsub.s "<< destReg <<", ft0, "<< destReg << std::endl;
+                stream << "fsub.d f"<< destReg <<", ft0, "<< destReg << std::endl;
             }
             else if (op_ == "*=")
             {
-                stream << "fmul.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+                stream << "fmul.d f" << destReg << ", "<< destReg <<", ft0" << std::endl;
             }
             else if (op_ == "/=")
             {
-                stream << "fdiv.s " << destReg << ", "<< destReg <<", ft0" << std::endl;
+                stream << "fdiv.d f" << destReg << ", "<< destReg <<", ft0" << std::endl;
             }
             else if (op_ == "%=")
             {
                 throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
             }
 
-            stream << "fsd " << destReg <<", 0(a2)" << std::endl;
+            stream << "fsd f" << destReg <<", 0(a2)" << std::endl;
         }
         else
         {

@@ -54,6 +54,7 @@ namespace ast
         void EmitRISC(std::ostream &stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
         void Print(std::ostream &stream) const override;
         std::string GetIdentifier() const { return identifier_->GetIdentifier(); }
+        TypeSpecifier GetType() const { return identifier_->GetType(); }
     };
 
     class VariablePostInc : public Node

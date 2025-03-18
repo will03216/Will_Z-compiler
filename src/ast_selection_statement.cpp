@@ -1,17 +1,10 @@
 #include "ast_selection_statement.hpp"
+#include <queue>
 
 namespace ast {
     void IfStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
     {
         std::string type_reg = "a5";
-        if (type == TypeSpecifier::FLOAT)
-        {
-            type_reg = "fa5";
-        }
-        else if (type == TypeSpecifier::DOUBLE)
-        {
-            type_reg = "fa5";
-        }
 
         std::string else_label = context->GetNewLabel();
         std::string end_label = context->GetNewLabel();

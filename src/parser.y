@@ -9,8 +9,7 @@
 
 	using namespace ast;
 
-
-	extern NodeList* g_root;
+    extern NodeList* g_root;
     extern FILE* yyin;
     int yylex(void);
     void yyerror(const char*);
@@ -42,10 +41,10 @@
 %type <node> init_declarator struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
 %type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration
 %type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
-%type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement
+%type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement switch_case default_case
 
 
-%type <node_list> statement_list parameter_list argument_expression_list translation_unit
+%type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list
 
 %type <number_int> INT_CONSTANT STRING_LITERAL
 %type <number_float> FLOAT_CONSTANT
@@ -62,6 +61,8 @@ ROOT
 translation_unit
 	: external_declaration { $$ = new NodeList(NodePtr($1)); }
     | translation_unit external_declaration { $1->PushBack(NodePtr($2)); $$=$1; }
+	;
+
 
 external_declaration
 	: function_definition { $$ = $1; }
@@ -71,9 +72,10 @@ external_declaration
 function_definition
 	: declaration_specifiers declarator compound_statement {
 		$$ = new FunctionDefinition($1, NodePtr($2), NodePtr($3));
-
 	}
-	| declaration_specifiers declarator ';' {}
+    | declaration_specifiers declarator ';' {
+		$$ = new FunctionDefinition($1, NodePtr($2), nullptr);
+	}
 	;
 
 declaration
@@ -98,7 +100,6 @@ type_specifier
 	| DOUBLE {
 		$$ = TypeSpecifier::DOUBLE;
 	}
-
 	;
 
 init_declarator
@@ -132,18 +133,20 @@ direct_declarator
 constant_expression
 	: conditional_expression { $$ = $1; }
 	;
+
 parameter_list
 	: parameter_declaration { $$ = new NodeList(NodePtr($1)); }
-
+	//fix this
 	| parameter_list ',' parameter_declaration { $1->PushBack(NodePtr($3)); $$=$1; }
 	;
+
 parameter_declaration
 	: declaration_specifiers declarator { $$ = new Parameter($1, NodePtr($2)); }
 	;
 
 statement
 	: jump_statement { $$ = $1; }
-	| declaration { $$ = $1; }
+    | declaration { $$ = $1; }
 	| expression_statement { $$ = $1; }
 	| compound_statement { $$ = new CompoundStatement(NodePtr($1)); }
 	| selection_statement { $$ = $1; }
@@ -173,15 +176,15 @@ primary_expression
 	: INT_CONSTANT {
 		$$ = new IntConstant($1);
 	}
-     | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
-	 | '(' expression ')' { $$ = $2; }
-	 | FLOAT_CONSTANT { $$ = new FloatConstant($1); }
+    | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
+	| '(' expression ')' { $$ = $2; }
+	| FLOAT_CONSTANT { $$ = new FloatConstant($1); }
 	;
 
 postfix_expression
 	: primary_expression {
         if ($1->GetIdentifier() != ""){
-             $$ = new VariableCall(std::move($1->GetIdentifier()) , nullptr);
+            $$ = new VariableCall(std::move($1->GetIdentifier()) , nullptr);
         } else {
             $$ = $1;
         } }
@@ -231,7 +234,7 @@ multiplicative_expression
 
 additive_expression
 	: multiplicative_expression
-	| additive_expression '+' multiplicative_expression{ $$ = new AddExpr(NodePtr($1), NodePtr($3)); }
+	| additive_expression '+' multiplicative_expression { $$ = new AddExpr(NodePtr($1), NodePtr($3)); }
 	| additive_expression '-' multiplicative_expression { $$ = new SubExpr(NodePtr($1), NodePtr($3)); }
 	;
 
@@ -240,6 +243,7 @@ shift_expression
 	| shift_expression LEFT_OP additive_expression { $$ = new LeftShiftExpr(NodePtr($1), NodePtr($3)); }
 	| shift_expression RIGHT_OP additive_expression { $$ = new RightShiftExpr(NodePtr($1), NodePtr($3)); }
 	;
+
 
 relational_expression
 	: shift_expression { $$ = $1; }
@@ -291,7 +295,7 @@ assignment_expression
 	;
 
 assignment_operator
-	 : '=' { $$ = new std::string("="); }
+    : '=' { $$ = new std::string("="); }
     | MUL_ASSIGN { $$ = new std::string("*="); }
     | DIV_ASSIGN { $$ = new std::string("/="); }
     | MOD_ASSIGN { $$ = new std::string("%="); }
@@ -304,10 +308,10 @@ assignment_operator
     | OR_ASSIGN { $$ = new std::string("|="); }
     ;
 
-
 expression
 	: assignment_expression { $$ = $1; }
 	;
+
 expression_statement
 	: expression ';' { $$ = $1; }
 	;
@@ -315,8 +319,23 @@ expression_statement
 selection_statement
 	: IF '(' expression ')' statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), nullptr ); }
 	| IF '(' expression ')' statement ELSE statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
-	| SWITCH '(' expression ')' statement
+	| SWITCH '(' expression ')' statement {  }
 	;
+// TODO Implement Switch statements
+/*
+switch_case_list
+	: switch_case { $$ = new NodeList(NodePtr($1)); }
+	| switch_case_list switch_case { $1->PushBack(NodePtr($2)); $$=$1; }
+	;
+
+switch_case
+	: CASE constant_expression ':' statement { $$ = new SwitchCase(NodePtr($2), NodePtr($4)); }
+	;
+
+default_case
+    : DEFAULT ':' statement { $$ = new SwitchCase(nullptr, NodePtr($3)); }
+    ;
+*/
 
 iteration_statement
 	: WHILE '(' expression ')' statement { $$ = new WhileStatement(NodePtr($3), NodePtr($5)); }

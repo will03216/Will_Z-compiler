@@ -27,6 +27,11 @@ namespace ast {
                     stream << "fsw fa" << index_float << ", " << offset << "(s0)" << std::endl;
                     index_float++;
                 }
+                else if (type == TypeSpecifier::DOUBLE)
+                {
+                    stream << "fsd fa" << index_float << ", " << offset << "(s0)" << std::endl;
+                    index_float++;
+                }
                 else
                 {
                     throw std::runtime_error("Unexpected type specifier");
