@@ -1,25 +1,25 @@
 #include "ast_symbol_table.hpp"
 
 namespace ast {
-    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type)
+    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type, bool )
     {
         if (type == TypeSpecifier::INT)
         {
-            table_[name] = {name, type, offset_};
+            table_[name] = {name, type, offset_, -1, false};
             int temp = offset_;
             offset_ -= 4;
             return temp;
         }
         else if (type == TypeSpecifier::FLOAT)
         {
-            table_[name] = {name, type, offset_};
+            table_[name] = {name, type, offset_, -1, false};
             int temp = offset_;
             offset_ -= 4;
             return temp;
         }
         else if (type == TypeSpecifier::DOUBLE)
         {
-            table_[name] = {name, type, offset_};
+            table_[name] = {name, type, offset_, -1, false};
             int temp = offset_;
             offset_ -= 8;
             return temp;
@@ -48,7 +48,7 @@ namespace ast {
     }
     int SymbolTable::AddArray(const std::string& name, const TypeSpecifier& type, int size)
     {
-        table_[name] = {name, type, offset_};
+        table_[name] = {name, type, offset_, -1, false};
         int temp = offset_;
         offset_ -= 4 * size;
         return temp;

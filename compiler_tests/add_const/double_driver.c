@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-float f();
+double f();
 
 void test(double a)
 {
@@ -12,7 +12,7 @@ int main()
 {
 
     test(5.5);
-    printf("float function returned: %f\n", f());
+    printf("double function returned: %f\n", f());
 
     return !(f() == 3.0000001);
 }

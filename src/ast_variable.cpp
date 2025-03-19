@@ -134,12 +134,30 @@ namespace ast {
             index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
             stream << "li t0, -4" << std::endl;
             stream << "mul a1, a1, t0" << std::endl;
-            //only implementing int array
-            int offset = context->GetScopedSymbol(identifier_)->offset;
-            stream << "li t0, " << offset << std::endl;
-            stream << "add "<< destReg <<", a1, t0" << std::endl; // store the address of the array in a3 for use later (need to save this later)
+            Symbol symbol = *context->GetScopedSymbol(identifier_);
+            type_checker_->SetType(symbol.type);
+
+            stream << "li t0, " << symbol.offset << std::endl;
+            stream << "add "<< destReg <<", a1, t0" << std::endl;
             stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
-            //is this necessary here?
+
+            if (symbol.type == TypeSpecifier::INT)
+            {
+                stream << "lw "<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::FLOAT)
+            {
+                stream << "flw f"<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::DOUBLE)
+            {
+                stream << "fld f"<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("VariableCall: TypeSpecifier not supported");
+            }
+
             stream << "lw a4, 0(sp)" << std::endl;
             stream << "add sp, sp, 4" << std::endl;
         }

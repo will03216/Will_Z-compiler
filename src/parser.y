@@ -112,6 +112,7 @@ initializer
 
 declarator
 	: direct_declarator { $$ = $1; }
+	| pointer direct_declarator { $$ = $2; }
 	;
 
 direct_declarator
@@ -128,6 +129,10 @@ direct_declarator
 	| direct_declarator '[' INT_CONSTANT ']' {
 		$$ = new DirectDeclarator(NodePtr($1), nullptr, $3);
 	}
+	;
+pointer
+	: '*' {  }
+	| '*' pointer {  }
 	;
 
 constant_expression
@@ -219,6 +224,11 @@ unary_expression
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| '-' postfix_expression {   $$ = new Negation(NodePtr($2)); }
+	| '&' unary_expression { $$ = $2; }
+	| '*' unary_expression
+	| '~' unary_expression
+	| '!' unary_expression
+	| SIZEOF unary_expression
 	;
 
 cast_expression
