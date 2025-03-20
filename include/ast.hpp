@@ -25,4 +25,6 @@
 #include "ast_pointers.hpp"
 #include "ast_size.hpp"
 #include "ast_string.hpp"
+#include "ast_type_node.hpp"
+#include "ast_struct.hpp"
 ast::NodePtr ParseAST(std::string file_name);

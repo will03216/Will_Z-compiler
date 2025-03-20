@@ -38,18 +38,19 @@
 %type <node> unary_expression cast_expression multiplicative_expression additive_expression shift_expression relational_expression
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression declaration init_declarator_list
-%type <node> init_declarator struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration
-%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement initializer
+%type <node> init_declarator struct_specifier  struct_declaration specifier_qualifier_list struct_declarator_list
+%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration declaration_specifiers
+%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement initializer type_specifier
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement switch_case default_case
 
 
 %type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list  initializer_list labeled_statement_list
+%type <node_list> struct_declaration_list
 
 %type <number_int> INT_CONSTANT
 %type <number_float> FLOAT_CONSTANT
 %type <string> IDENTIFIER assignment_operator STRING_LITERAL
-%type <type_specifier> type_specifier declaration_specifiers
+//%type <type_specifier>
 
 
 %start ROOT
@@ -71,16 +72,16 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator compound_statement {
-		$$ = new FunctionDefinition($1, NodePtr($2), NodePtr($3));
+		$$ = new FunctionDefinition(NodePtr($1), NodePtr($2), NodePtr($3));
 	}
     | declaration_specifiers declarator ';' {
-		$$ = new FunctionDefinition($1, NodePtr($2), nullptr);
+		$$ = new FunctionDefinition(NodePtr($1), NodePtr($2), nullptr);
 	}
 	;
 
 declaration
 	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator ';' { $$ = new VariableDeclare($1, NodePtr($2)); }
+	| declaration_specifiers init_declarator ';' { $$ = new VariableDeclare(NodePtr($1), NodePtr($2)); }
 	;
 
 declaration_specifiers
@@ -89,20 +90,71 @@ declaration_specifiers
 
 type_specifier
 	: INT {
-		$$ = TypeSpecifier::INT;
+		$$ = new TypeSpecifierNode(TypeSpecifier::INT);
 	}
 	| VOID {
-		$$ = TypeSpecifier::VOID;
+		$$ = new TypeSpecifierNode(TypeSpecifier::VOID);
 	}
 	| FLOAT {
-		$$ = TypeSpecifier::FLOAT;
+		$$ = new TypeSpecifierNode(TypeSpecifier::FLOAT);
 	}
 	| DOUBLE {
-		$$ = TypeSpecifier::DOUBLE;
+		$$ = new TypeSpecifierNode(TypeSpecifier::DOUBLE);
 	}
 	| CHAR {
-		$$ = TypeSpecifier::CHAR;
+		$$ = new TypeSpecifierNode(TypeSpecifier::CHAR);
 	}
+	| SIGNED {
+		$$ = new TypeSpecifierNode(TypeSpecifier::SIGNED);
+	}
+	| UNSIGNED {
+		$$ = new TypeSpecifierNode(TypeSpecifier::UNSIGNED);
+	}
+    | struct_specifier { $$ = $1; }
+	| enum_specifier
+	| TYPE_NAME
+	;
+
+struct_specifier
+	: STRUCT IDENTIFIER '{' struct_declaration_list '}' { $$ = new StructDeclare(std::move(*$2), NodePtr($4)); delete $2; }
+	| STRUCT '{' struct_declaration_list '}'
+	| STRUCT IDENTIFIER { $$ = new StructSpecifier(std::move(*$2)); delete $2; }
+	;
+
+struct_declaration_list
+	: struct_declaration { $$ = new NodeList(NodePtr($1)); }
+	| struct_declaration_list struct_declaration { $1->PushBack(NodePtr($2)); $$=$1; }
+	;
+
+struct_declaration
+	: specifier_qualifier_list struct_declarator_list ';' { $$ = new StructDeclaration(NodePtr($1), NodePtr($2)); }
+	;
+
+struct_declarator_list
+	: struct_declarator { $$ = $1; }
+	| struct_declarator_list ',' struct_declarator
+	;
+
+struct_declarator
+	: declarator { $$ = new StructDeclarator(NodePtr($1), nullptr); }
+	| ':' constant_expression
+	| declarator ':' constant_expression { $$ = new StructDeclarator(NodePtr($1), NodePtr($3)); }
+	;
+
+enum_specifier
+	: ENUM '{' enumerator_list '}'
+	| ENUM IDENTIFIER '{' enumerator_list '}'
+	| ENUM IDENTIFIER
+	;
+
+enumerator_list
+	: enumerator
+	| enumerator_list ',' enumerator
+	;
+
+enumerator
+	: IDENTIFIER
+	| IDENTIFIER '=' constant_expression
 	;
 
 init_declarator
@@ -159,12 +211,12 @@ parameter_list
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator { $$ = new Parameter($1, NodePtr($2)); }
+	: declaration_specifiers declarator { $$ = new Parameter(NodePtr($1), NodePtr($2)); }
 	;
 
 specifier_qualifier_list
 	: type_specifier specifier_qualifier_list
-	| type_specifier { $$ = new TypeSpecifierNode($1); }
+	| type_specifier { $$ = $1; }
 	;
 
 type_name
@@ -241,7 +293,7 @@ postfix_expression
     | postfix_expression '[' expression ']' { $$ = new VariableCall(std::move($1->GetIdentifier()), NodePtr($3)); }
 	| postfix_expression '(' ')' { $$ = new FunctionCall(NodePtr($1), nullptr); }
 	| postfix_expression '(' argument_expression_list ')' { $$ = new FunctionCall(NodePtr($1), NodePtr($3)); }
-	| postfix_expression '.' IDENTIFIER
+	| postfix_expression '.' IDENTIFIER { $$ = new StructMemberCall(NodePtr($1), std::move(*$3)); }
 	| postfix_expression PTR_OP IDENTIFIER
 	| postfix_expression INC_OP {
         if ($1->GetIdentifier() != ""){
@@ -376,12 +428,6 @@ selection_statement
 	: IF '(' expression ')' statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), nullptr ); }
 	| IF '(' expression ')' statement ELSE statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
 	| SWITCH '(' expression ')' '{' labeled_statement_list '}' { $$ = new SwitchStatement(NodePtr($3), NodePtr($6)); }
-
-
-
-
-
-
 	;
 
 labeled_statement_list

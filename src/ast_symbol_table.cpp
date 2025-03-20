@@ -1,7 +1,7 @@
 #include "ast_symbol_table.hpp"
 
 namespace ast {
-    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer)
+    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer, int size, std::string structIdentifier)
     {
         if (type == TypeSpecifier::INT)
         {
@@ -30,6 +30,12 @@ namespace ast {
             int temp = offset_;
             offset_ -= 1;
             return temp;
+        }
+        else if (type == TypeSpecifier::STRUCT)
+        {
+            offset_ -= size;
+            table_[name] = {structIdentifier, type, offset_, -1, isPointer};
+            return offset_;
         }
         else
         {

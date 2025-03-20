@@ -11,7 +11,11 @@ enum class TypeSpecifier
     FLOAT,
     DOUBLE,
     CHAR,
-    VOID
+    VOID,
+    SIGNED,
+    UNSIGNED,
+    STRUCT,
+    ENUM
 };
 
 template<typename LogStream>
@@ -28,12 +32,19 @@ LogStream& operator<<(LogStream& ls, const TypeSpecifier& type)
             return "double";
         case TypeSpecifier::CHAR:
             return "char";
+        case TypeSpecifier::SIGNED:
+            return "signed";
+        case TypeSpecifier::UNSIGNED:
+            return "unsigned";
         case TypeSpecifier::VOID:
             return "void";
+        case TypeSpecifier::STRUCT:
+            return "struct";
+        case TypeSpecifier::ENUM:
+            return "enum";
         }
         throw std::runtime_error("Unexpected type specifier");
     };
     return ls << TypeToString();
 }
-
 } // namespace ast

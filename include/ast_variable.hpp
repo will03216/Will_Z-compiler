@@ -10,18 +10,18 @@ namespace ast {
 class VariableDeclare : public Node
 {
 private:
-     const TypeSpecifier declaration_specifiers_;
+     NodePtr declaration_specifiers_;
      NodePtr init_declarator_;
 
 
 public:
-    VariableDeclare(const TypeSpecifier declaration_specifiers, NodePtr init_declarator) : declaration_specifiers_(declaration_specifiers), init_declarator_(std::move(init_declarator)){};
+    VariableDeclare(NodePtr declaration_specifiers, NodePtr init_declarator) : declaration_specifiers_(std::move(declaration_specifiers)), init_declarator_(std::move(init_declarator)){};
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
     std::string GetIdentifier() const { return init_declarator_->GetIdentifier(); }
     int IsArray() const { return init_declarator_->IsArray(); }
-    TypeSpecifier GetType(std::shared_ptr<Context> ) const { return declaration_specifiers_; }
+    TypeSpecifier GetType(std::shared_ptr<Context> context) const { return declaration_specifiers_->GetType(context); }
     int IsPointer(std::shared_ptr<Context> context) const { return init_declarator_->IsPointer(context); }
 };
 
@@ -31,11 +31,8 @@ private:
      std::string identifier_;
      NodePtr index_;
 
-
 public:
     VariableCall(std::string identifier, NodePtr index) : identifier_(identifier), index_(std::move(index)) {};
-
-
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;

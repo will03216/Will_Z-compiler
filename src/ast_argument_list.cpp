@@ -1,32 +1,34 @@
+
 #include "ast_argument_list.hpp"
 
 namespace ast {
     void ArgumentExpressionList::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier) const
+{
+    std::string function_name = context->GetFunctionCallName();
+    std::vector<TypeSpecifier> parameters = context->GetFunction(function_name)->parameters;
+    bool is_external = false;
+
+    if (parameters.size() == 0 && arguments_.size() != 0)
     {
-        std::string function_name = context->GetFunctionCallName();
-        std::vector<TypeSpecifier> parameters = context->GetFunction(function_name)->parameters;
-        bool is_external = false;
+        is_external = true;
+    }
 
-        if (parameters.size() == 0 && arguments_.size() != 0)
+    //Temp fix for external functions (Ask about this)
+    if (is_external)
+    {
+        int index = 0;
+        for (const auto& argument : arguments_)
         {
-            is_external = true;
+            argument->EmitRISC(stream, context, destReg, TypeSpecifier::INT);
+            stream << "mv a" << index << ", " << destReg << std::endl;
+            index++;
         }
+        return;
+    }
 
-        //Temp fix for external functions (Ask about this)
-        if (is_external)
-        {
-            int index = 0;
-            for (const auto& argument : arguments_)
-            {
-                argument->EmitRISC(stream, context, destReg, TypeSpecifier::INT);
-                stream << "mv a" << index << ", " << destReg << std::endl;
-                index++;
-            }
-            return;
-        }
+    int index_int = 0;
+    int index_float = 0;
 
-        int index_int = 0;
-        int index_float = 0;
     for (const auto& argument : arguments_)
     {
         TypeSpecifier type = parameters[index_int + index_float];
@@ -74,6 +76,7 @@ void ArgumentExpressionList::PushBack(NodePtr argument)
 {
     arguments_.push_back(std::move(argument));
 }
+
 void Parameter::EmitRISC(std::ostream& , std::shared_ptr<Context> , std::string , TypeSpecifier ) const
 {
     // do nothing
@@ -81,7 +84,11 @@ void Parameter::EmitRISC(std::ostream& , std::shared_ptr<Context> , std::string 
 
 void Parameter::Print(std::ostream& stream) const
 {
-    stream << type_ << " " << identifier_->GetIdentifier();
+    stream << "Parameter(";
+    type_->Print(stream);
+    stream << ", ";
+    identifier_->Print(stream);
+    stream << ")";
 }
 
 std::string Parameter::GetIdentifier() const
@@ -89,11 +96,9 @@ std::string Parameter::GetIdentifier() const
     return identifier_->GetIdentifier();
 }
 
-TypeSpecifier Parameter::GetType(std::shared_ptr<Context>) const
+TypeSpecifier Parameter::GetType(std::shared_ptr<Context> context) const
 {
-    return type_;
+    return type_->GetType(context);
 }
 
 } // namespace ast
-
-

@@ -9,6 +9,7 @@
 #include "ast_reg_stack.hpp"
 #include "ast_function_table.hpp"
 #include "ast_literals.hpp"
+#include "ast_struct_table.hpp"
 
 namespace ast {
 
@@ -21,24 +22,23 @@ private:
     std::string function_call_name_;
     static std::string exit_label_;
     static FunctionTable function_table_;
-
-
     static LiteralTable literal_table_;
+    StructTable struct_table_;
 
 
     // Private constructor to enforce shared_ptr management
-    explicit Context(std::shared_ptr<Context> parent_context = nullptr, int offset = -20)
-        : parent_context_(std::move(parent_context)), symbol_table_(SymbolTable(offset)) {}
+    explicit Context(std::shared_ptr<Context> parent_context = nullptr, int offset = -20, StructTable struct_table = StructTable())
+        : parent_context_(std::move(parent_context)), symbol_table_(SymbolTable(offset)), struct_table_(struct_table) {}
 
 public:
     // Factory function to ensure Context is always created as a shared_ptr
-    static std::shared_ptr<Context> Create(std::shared_ptr<Context> parent_context = nullptr, int offset = -20)
+    static std::shared_ptr<Context> Create(std::shared_ptr<Context> parent_context = nullptr, int offset = -20, StructTable struct_table = StructTable())
     {
-        return std::shared_ptr<Context>(new Context(std::move(parent_context), offset));
+        return std::shared_ptr<Context>(new Context(std::move(parent_context), offset, struct_table));
     }
 
     // Adds a symbol to the current context.
-    int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0);
+    int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0, int size = 0, std::string structIdentifier = "");
 
     // Returns the symbol with the given name in the current context.
     const Symbol* GetSymbol(const std::string& name) const;
@@ -51,7 +51,6 @@ public:
     {
         int offset = symbol_table_.GetOffset();
         return Create(shared_from_this(), offset);
-
     }
 
     // Searches for a symbol in the current context and then in parent contexts.
@@ -82,22 +81,14 @@ public:
 
     void PushReg(std::string reg, std::ostream& stream) {
         function_table_.PushReg(reg, stream);
-
-
     }
 
     void PopReg(std::ostream& stream) {
         function_table_.PopReg(stream);
-
-
     }
 
     void ExitRegStack(std::ostream& stream) {
         function_table_.ExitRegStack(stream);
-
-
-
-
     }
 
     void AddFunction(const std::string& name, const TypeSpecifier& return_type, const std::vector<TypeSpecifier>& parameters, int is_pointer)
@@ -138,6 +129,37 @@ public:
     int GetStringLabel(std::string value)
     {
         return literal_table_.GetStringLabel(value);
+    }
+
+    void AddStruct(const std::string& identifier, const Struct& s)
+    {
+        struct_table_.AddStruct(identifier, s);
+    }
+
+    const Struct* GetStruct(const std::string& identifier) const
+    {
+        if (struct_table_.HasStruct(identifier))
+            return struct_table_.GetStruct(identifier);
+        else
+            return parent_context_->GetStruct(identifier);
+    }
+
+    bool HasStruct(const std::string& identifier) const
+    {
+        return struct_table_.HasStruct(identifier);
+    }
+
+    StructMember GetMember(const std::string& struct_identifier, const std::string& member_identifier) const
+    {
+        if (struct_table_.HasStruct(struct_identifier))
+        {
+            return struct_table_.GetMember(struct_identifier, member_identifier);
+        }
+        else
+        {
+            return parent_context_->GetMember(struct_identifier, member_identifier);
+        }
+
     }
 
     ~Context() = default;

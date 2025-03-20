@@ -5,17 +5,18 @@ namespace ast {
 
 void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
 {
+    TypeSpecifier type = declaration_specifiers_->GetType(context);
     if ( compound_statement_ == nullptr)
     {
-        context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes(context), declarator_->IsPointer(context));
+        context->AddFunction(declarator_->GetIdentifier(), type, declarator_->GetTypes(context), declarator_->IsPointer(context));
         return;
     }
 
-    context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes(context), declarator_->IsPointer(context));
+    context->AddFunction(declarator_->GetIdentifier(), type, declarator_->GetTypes(context), declarator_->IsPointer(context));
 
     context->SetCurrentFunction(declarator_->GetIdentifier());
 
-    TypeSpecifier type = declaration_specifiers_;
+
     std::string function_name = declarator_->GetIdentifier();
     // Emit assembler directives.
     // TODO: these are just examples ones, make sure you understand
@@ -57,7 +58,8 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context>
 void FunctionDefinition::Print(std::ostream& stream) const
 {
 
-    stream << declaration_specifiers_ << " ";
+    declaration_specifiers_->Print(stream);
+    stream << " ";
 
     declarator_->Print(stream);
     stream << "() {" << std::endl;

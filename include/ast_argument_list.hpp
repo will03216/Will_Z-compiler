@@ -24,10 +24,10 @@ public:
 class Parameter : public Node
 {
 private:
-    TypeSpecifier type_;
+    NodePtr type_;
     NodePtr identifier_;
 public:
-    Parameter(TypeSpecifier type, NodePtr identifier) : type_(type), identifier_(std::move(identifier)) {}
+Parameter(NodePtr type, NodePtr identifier) : type_(std::move(type)), identifier_(std::move(identifier)) {}
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;

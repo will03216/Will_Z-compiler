@@ -17,7 +17,7 @@ void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> co
         return;
     }
 
-    if(type == TypeSpecifier::INT){
+    if(type == TypeSpecifier::INT || type == TypeSpecifier::SIGNED || type == TypeSpecifier::UNSIGNED){
         if (expression_ != nullptr)
         {
             expression_->EmitRISC(stream, context, "a5", type);

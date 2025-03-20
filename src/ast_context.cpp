@@ -1,13 +1,15 @@
 #include "ast_context.hpp"
 
 namespace ast {
+
     int Context::label_counter_ = 1;
     FunctionTable Context::function_table_ = FunctionTable();
     LiteralTable Context::literal_table_ = LiteralTable();
     std::string Context::exit_label_ = "exit";
-    int Context::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer)
+
+    int Context::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer, int size, std::string structIdentifier)
     {
-        return symbol_table_.AddSymbol(name, type, isPointer);
+        return symbol_table_.AddSymbol(name, type, isPointer, size, structIdentifier);
     }
     const Symbol* Context::GetSymbol(const std::string& name) const
     {
@@ -17,7 +19,8 @@ namespace ast {
     {
         return symbol_table_.HasSymbol(name);
     }
-    const Symbol* Context::GetScopedSymbol(const std::string& name) const //11111
+
+    const Symbol* Context::GetScopedSymbol(const std::string& name) const
     {
         if (symbol_table_.HasSymbol(name))
         {
@@ -30,8 +33,9 @@ namespace ast {
         }
         return parent_context_->GetScopedSymbol(name);
     }
+
     std::string Context::GetNewLabel()
     {
         return "L" + std::to_string(label_counter_++);
     }
-}
+} //namespace ast

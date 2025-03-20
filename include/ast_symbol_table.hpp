@@ -25,7 +25,7 @@ class SymbolTable
     public:
 
         SymbolTable(int offset = -20) : offset_(offset) {}
-        int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0);
+        int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0, int size = 0, std::string structIdentifier = "");
 
         const Symbol* GetSymbol(const std::string& name) const;
         bool HasSymbol(const std::string& name) const;

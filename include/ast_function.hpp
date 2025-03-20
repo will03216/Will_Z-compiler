@@ -8,16 +8,16 @@ namespace ast {
 class FunctionDefinition : public Node
 {
 private:
-    const TypeSpecifier declaration_specifiers_;
+    NodePtr declaration_specifiers_;
     NodePtr declarator_;
     NodePtr compound_statement_;
 
 public:
-    FunctionDefinition(TypeSpecifier declaration_specifiers, NodePtr declarator, NodePtr compound_statement) : declaration_specifiers_(declaration_specifiers), declarator_(std::move(declarator)), compound_statement_(std::move(compound_statement)){};
+    FunctionDefinition(NodePtr declaration_specifiers, NodePtr declarator, NodePtr compound_statement) : declaration_specifiers_(std::move(declaration_specifiers)), declarator_(std::move(declarator)), compound_statement_(std::move(compound_statement)){};
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType(std::shared_ptr<Context>) const override { return declaration_specifiers_; }
+    TypeSpecifier GetType(std::shared_ptr<Context> context) const override { return declaration_specifiers_->GetType(context); }
     int IsPointer(std::shared_ptr<Context> context) const override { return declarator_->IsPointer(context); }
 };
 
@@ -35,4 +35,6 @@ public:
     TypeSpecifier GetType(std::shared_ptr<Context> context) const override { return context->GetFunction(identifier_->GetIdentifier())->return_type; }
     //int IsPointer(std::shared_ptr<Context> context) const override { return context->GetFunction(identifier_->GetIdentifier())->is_pointer; }
 };
-}
+
+
+} // namespace ast

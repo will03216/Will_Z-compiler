@@ -21,6 +21,11 @@ void SizeOfExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context
     {
         stream << "li " << destReg << ", 1" << std::endl;
     }
+    else if (exprType == TypeSpecifier::STRUCT)
+    {
+        const Struct* s = context->GetStruct(context->GetScopedSymbol(expr_->GetIdentifier())->name);
+        stream << "li " << destReg << ", " << s->size << std::endl;
+    }
     else
     {
         throw std::runtime_error("SizeOfExpr: TypeSpecifier not supported");
