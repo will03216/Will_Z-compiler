@@ -44,7 +44,7 @@
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement switch_case default_case
 
 
-%type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list  initializer_list
+%type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list  initializer_list labeled_statement_list
 
 %type <number_int> INT_CONSTANT
 %type <number_float> FLOAT_CONSTANT
@@ -216,6 +216,9 @@ jump_statement
 	| RETURN expression ';' {
 		$$ = new ReturnStatement(NodePtr($2));
 	}
+	| CONTINUE ';'
+	| BREAK ';' { $$ = new BreakStatement(); }
+	| GOTO IDENTIFIER ';'
 	;
 
 primary_expression
@@ -372,23 +375,25 @@ expression_statement
 selection_statement
 	: IF '(' expression ')' statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), nullptr ); }
 	| IF '(' expression ')' statement ELSE statement { $$ = new IfStatement(NodePtr($3), NodePtr($5), NodePtr($7)); }
-	| SWITCH '(' expression ')' statement {  }
-	;
-// TODO Implement Switch statements
-/*
-switch_case_list
-	: switch_case { $$ = new NodeList(NodePtr($1)); }
-	| switch_case_list switch_case { $1->PushBack(NodePtr($2)); $$=$1; }
+	| SWITCH '(' expression ')' '{' labeled_statement_list '}' { $$ = new SwitchStatement(NodePtr($3), NodePtr($6)); }
+
+
+
+
+
+
 	;
 
-switch_case
-	: CASE constant_expression ':' statement { $$ = new SwitchCase(NodePtr($2), NodePtr($4)); }
+labeled_statement_list
+	: labeled_statement { $$ = new NodeList(NodePtr($1)); }
+	| labeled_statement_list labeled_statement { $1->PushBack(NodePtr($2)); $$=$1; }
 	;
 
-default_case
-    : DEFAULT ':' statement { $$ = new SwitchCase(nullptr, NodePtr($3)); }
-    ;
-*/
+labeled_statement
+	: IDENTIFIER ':' statement
+	| CASE constant_expression ':' statement_list { $$ = new CaseStatement(NodePtr($2), NodePtr($4)); }
+	| DEFAULT ':' statement_list { $$ = new CaseStatement(nullptr, NodePtr($3)); }
+	;
 
 iteration_statement
 	: WHILE '(' expression ')' statement { $$ = new WhileStatement(NodePtr($3), NodePtr($5)); }

@@ -4,6 +4,7 @@ namespace ast {
     int Context::label_counter_ = 1;
     FunctionTable Context::function_table_ = FunctionTable();
     LiteralTable Context::literal_table_ = LiteralTable();
+    std::string Context::exit_label_ = "exit";
     int Context::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer)
     {
         return symbol_table_.AddSymbol(name, type, isPointer);

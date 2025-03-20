@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <stack>
@@ -14,17 +13,28 @@ struct Reg {
 class RegStack {
 private:
     std::stack<Reg> stack_;
+    int offset_ = 0;
 
 public:
-    void PushReg(std::string reg, int offset) {
-        Reg r = {reg, offset};
-        stack_.push(r);
+
+    RegStack() : offset_(0) {}
+
+    void PushReg(std::string reg, std::ostream& stream) {
+        Reg reg_struct = {reg, offset_};
+        stack_.push(reg_struct);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw " << reg << ", " << offset_ << "(sp)" << std::endl;
+        offset_ -= 4;
     }
 
-    Reg PopReg() {
-        Reg r = stack_.top();
+    void PopReg(std::ostream& stream) {
+        if (stack_.empty()) {
+            return;
+        }
+        stream << "lw " << stack_.top().reg << ", " << stack_.top().offset << "(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
         stack_.pop();
-        return r;
+        offset_ += 4;
     }
 
     bool Empty() {
@@ -33,6 +43,12 @@ public:
 
     Reg TopReg() {
         return stack_.top();
+    }
+
+    void ExitRegStack(std::ostream& stream) {
+        while (!stack_.empty()) {
+            PopReg(stream);
+        }
     }
 };
 

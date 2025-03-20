@@ -449,6 +449,7 @@ iteration_statement
 jump_statement
 	: GOTO IDENTIFIER ';'
 	| CONTINUE ';'
+	| BREAK ';' { $$ = new BreakStatement();}
 	| BREAK ';'
 	| RETURN ';' {
 		$$ = new ReturnStatement(nullptr);
