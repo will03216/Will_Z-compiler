@@ -19,6 +19,7 @@ public:
     void Print(std::ostream& stream) const override;
     std::string GetIdentifier() const override {return declarator_->GetIdentifier();};
     int IsArray() const override { return declarator_->IsArray(); };
+    int IsPointer(std::shared_ptr<Context> context) const override { return declarator_->IsPointer(context); };
 };
 
 } // namespace ast

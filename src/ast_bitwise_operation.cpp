@@ -6,7 +6,11 @@ namespace ast {
         if (type == TypeSpecifier::INT)
         {
             lhs_->EmitRISC(stream, context, "a4", type);
+            stream << "addi sp, sp, -4" << std::endl;
+            stream << "sw a4, 0(sp)" << std::endl;
             rhs_->EmitRISC(stream, context, "a5", type);
+            stream << "lw a4, 0(sp)" << std::endl;
+            stream << "addi sp, sp, 4" << std::endl;
             stream << "and "<< destReg <<",a4,a5" << std::endl;
         }
         else
@@ -26,7 +30,11 @@ namespace ast {
         if (type == TypeSpecifier::INT)
         {
             lhs_->EmitRISC(stream, context, "a4", type);
+            stream << "addi sp, sp, -4" << std::endl;
+            stream << "sw a4, 0(sp)" << std::endl;
             rhs_->EmitRISC(stream, context, "a5", type);
+            stream << "lw a4, 0(sp)" << std::endl;
+            stream << "addi sp, sp, 4" << std::endl;
             stream << "or "<< destReg <<",a4,a5" << std::endl;
         }
         else
@@ -44,7 +52,11 @@ namespace ast {
         if (type == TypeSpecifier::INT)
         {
             lhs_->EmitRISC(stream, context, "a4", type);
+            stream << "addi sp, sp, -4" << std::endl;
+            stream << "sw a4, 0(sp)" << std::endl;
             rhs_->EmitRISC(stream, context, "a5", type);
+            stream << "lw a4, 0(sp)" << std::endl;
+            stream << "addi sp, sp, 4" << std::endl;
             stream << "xor "<< destReg <<",a4,a5" << std::endl;
         }
         else

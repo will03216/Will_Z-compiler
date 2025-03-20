@@ -33,7 +33,7 @@ public:
         return std::shared_ptr<Context>(new Context(std::move(parent_context), offset, reg_stack));
     }
     // Adds a symbol to the current context.
-    int AddSymbol(const std::string& name, const TypeSpecifier& type);
+    int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0);
     // Returns the symbol with the given name in the current context.
     const Symbol* GetSymbol(const std::string& name) const;
     // Checks if a symbol with the given name exists in the current context.

@@ -84,7 +84,7 @@ std::string Parameter::GetIdentifier() const
     return identifier_->GetIdentifier();
 }
 
-TypeSpecifier Parameter::GetType() const
+TypeSpecifier Parameter::GetType(std::shared_ptr<Context>) const
 {
     return type_;
 }

@@ -30,6 +30,7 @@ void NodeList::Print(std::ostream& stream) const
         node->Print(stream);
     }
 }
+
 std::vector<std::string> NodeList::GetIdentifiers() const
 {
     std::vector<std::string> identifiers;
@@ -42,6 +43,7 @@ std::vector<std::string> NodeList::GetIdentifiers() const
         identifiers.push_back(node->GetIdentifier());
     }
     return identifiers;
+
 }
 
 void NodeList::EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const
@@ -55,8 +57,8 @@ void NodeList::EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> cont
         node->EmitValueRISC(stream, context, destReg);
     }
 }
-std::vector<TypeSpecifier> NodeList::GetTypes() const
 
+std::vector<TypeSpecifier> NodeList::GetTypes(std::shared_ptr<Context> context) const
 {
     std::vector<TypeSpecifier> types;
     for (const auto& node : nodes_)
@@ -65,8 +67,24 @@ std::vector<TypeSpecifier> NodeList::GetTypes() const
         {
             continue;
         }
-        types.push_back(node->GetType());
+        types.push_back(node->GetType(context));
     }
     return types;
 }
+
+std::vector<Symbol> NodeList::GetSymbols(std::shared_ptr<Context> context) const
+{
+    std::vector<Symbol> symbols;
+    for (const auto& node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        Symbol node_symbol = {node->GetIdentifier(), node->GetType(context), 0, node->IsArray(), node->IsPointer(context)};
+        symbols.push_back(node_symbol);
+    }
+    return symbols;
 }
+
+} // namespace ast

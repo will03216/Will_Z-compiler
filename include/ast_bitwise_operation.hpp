@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "ast_node.hpp"
@@ -15,7 +16,8 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType() const override { return lhs_->GetType(); }
+    TypeSpecifier GetType(std::shared_ptr<Context> context) const override { return CalculateType(lhs_->GetType(context), rhs_->GetType(context)); }
+    int IsPointer(std::shared_ptr<Context> context) const override { return CalculatePointer(lhs_->IsPointer(context), rhs_->IsPointer(context)); }
 };
 
 class BitwiseInlcusiveOrExpr : public Node
@@ -29,7 +31,8 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType() const override { return lhs_->GetType(); }
+    TypeSpecifier GetType(std::shared_ptr<Context> context) const override { return CalculateType(lhs_->GetType(context), rhs_->GetType(context)); }
+    int IsPointer(std::shared_ptr<Context> context) const override { return CalculatePointer(lhs_->IsPointer(context), rhs_->IsPointer(context)); }
 };
 
 class BitwiseExclusiveOrExpr : public Node
@@ -43,7 +46,8 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType() const override { return lhs_->GetType(); }
+    TypeSpecifier GetType(std::shared_ptr<Context> context) const override { return CalculateType(lhs_->GetType(context), rhs_->GetType(context)); }
+    int IsPointer(std::shared_ptr<Context> context) const override { return CalculatePointer(lhs_->IsPointer(context), rhs_->IsPointer(context)); }
 };
 
 }  // namespace ast

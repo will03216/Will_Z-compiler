@@ -11,7 +11,7 @@ struct Symbol {
     TypeSpecifier type;
     int offset;  // Stack offset for local variables
     int isArray; // For array size
-    bool isPointer; // For pointer type
+    int isPointer; // For pointer type
 
     // For implementation of global variables TODO
     //bool isGlobal;
@@ -25,7 +25,7 @@ class SymbolTable
     public:
 
         SymbolTable(int offset = -20) : offset_(offset) {}
-        int AddSymbol(const std::string& name, const TypeSpecifier& type, bool isPointer = false);
+        int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0);
 
         const Symbol* GetSymbol(const std::string& name) const;
         bool HasSymbol(const std::string& name) const;

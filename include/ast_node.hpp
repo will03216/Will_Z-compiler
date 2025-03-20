@@ -23,8 +23,11 @@ public:
     virtual int IsArray() const { return -1; };
     virtual std::unique_ptr<const Node> GetValue() const { return nullptr; };
     virtual void EmitValueRISC(std::ostream& , std::shared_ptr<Context> , std::string ) const {};
-    virtual TypeSpecifier GetType() const { return TypeSpecifier::VOID; };
-    virtual std::vector<TypeSpecifier> GetTypes() const { return {}; };
+    virtual TypeSpecifier GetType(std::shared_ptr<Context> ) const { return TypeSpecifier::VOID; };
+    virtual std::vector<TypeSpecifier> GetTypes(std::shared_ptr<Context> ) const { return {}; };
+    virtual int IsPointer(std::shared_ptr<Context> ) const { return 0; };
+    virtual std::vector<Symbol> GetSymbols(std::shared_ptr<Context> ) const { return {}; };
+
 };
 
 // If you don't feel comfortable using std::unique_ptr, you can switch NodePtr to be defined
@@ -47,7 +50,8 @@ public:
     virtual void Print(std::ostream& stream) const override;
     virtual std::vector<std::string> GetIdentifiers() const override;
     virtual void EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
-    virtual std::vector<TypeSpecifier> GetTypes() const override;
+    virtual std::vector<TypeSpecifier> GetTypes(std::shared_ptr<Context> context) const override;
+    virtual std::vector<Symbol> GetSymbols(std::shared_ptr<Context> context) const override;
 
 };// namespace ast
 }

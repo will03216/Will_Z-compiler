@@ -1,25 +1,25 @@
 #include "ast_symbol_table.hpp"
 
 namespace ast {
-    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type, bool )
+    int SymbolTable::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer)
     {
         if (type == TypeSpecifier::INT)
         {
-            table_[name] = {name, type, offset_, -1, false};
+            table_[name] = {name, type, offset_, -1, isPointer};
             int temp = offset_;
             offset_ -= 4;
             return temp;
         }
         else if (type == TypeSpecifier::FLOAT)
         {
-            table_[name] = {name, type, offset_, -1, false};
+            table_[name] = {name, type, offset_, -1, isPointer};
             int temp = offset_;
             offset_ -= 4;
             return temp;
         }
         else if (type == TypeSpecifier::DOUBLE)
         {
-            table_[name] = {name, type, offset_, -1, false};
+            table_[name] = {name, type, offset_, -1, isPointer};
             int temp = offset_;
             offset_ -= 8;
             return temp;
@@ -42,15 +42,27 @@ namespace ast {
     {
         return table_.find(name) != table_.end();
     }
+
     int SymbolTable::GetOffset() const
     {
         return offset_;
     }
     int SymbolTable::AddArray(const std::string& name, const TypeSpecifier& type, int size)
     {
-        table_[name] = {name, type, offset_, -1, false};
-        int temp = offset_;
-        offset_ -= 4 * size;
-        return temp;
+        if (type == TypeSpecifier::INT || type == TypeSpecifier::FLOAT){
+            offset_ -= 4 * size;
+            table_[name] = {name, type, offset_ + 4, size, false};
+            return offset_+4;
+        }
+        else if (type == TypeSpecifier::DOUBLE){
+            offset_ -= 8 * size;
+            table_[name] = {name, type, offset_ + 8, size, false};
+            return offset_+8;
+        }
+        else
+        {
+            throw std::runtime_error("SymbolTable: TypeSpecifier not supported");
+        }
     }
+
 }// namespace ast

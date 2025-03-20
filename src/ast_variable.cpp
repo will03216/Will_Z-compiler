@@ -12,7 +12,7 @@ namespace ast {
             {
                 throw std::runtime_error("Variable already declared");
             }
-            int offset = context->AddSymbol(identifier, declaration_specifiers_);
+            int offset = context->AddSymbol(identifier, declaration_specifiers_, init_declarator_->IsPointer(context));
 
             if (declaration_specifiers_ == TypeSpecifier::INT)
             {
@@ -61,7 +61,11 @@ namespace ast {
         if (index_ == nullptr)
         {
             Symbol symbol = *context->GetScopedSymbol(identifier_);
-            type_checker_->SetType(symbol.type);
+
+            if (symbol.isPointer == 1){
+                stream << "lw "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+                return;
+            }
 
             if (symbol.type == TypeSpecifier::INT)
             {
@@ -82,24 +86,65 @@ namespace ast {
         }
         else
         {
-            // ensure a4 is not lost if it is an lhs (temp solution, think of a better way to do this)
-            stream << "add sp, sp, -4" << std::endl;
-            stream << "sw a4, 0(sp)" << std::endl;
+
+
+
+
+
+
+            Symbol symbol = *context->GetScopedSymbol(identifier_);
             index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
-            stream << "li t0, -4" << std::endl;
-            stream << "mul a1, a1, t0" << std::endl;
-            //only implementing int array
-            int offset = context->GetScopedSymbol(identifier_)->offset;
-            stream << "li t0, " << offset << std::endl;
-            stream << "add "<< destReg <<", a1, t0" << std::endl; // store the address of the array in a3 for use later (need to save this later)
-            stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
-            stream << "lw "<< destReg <<", 0("<< destReg <<")" << std::endl;
-            stream << "lw a4, 0(sp)" << std::endl;
-            stream << "add sp, sp, 4" << std::endl;
+            if (symbol.type == TypeSpecifier::INT)
+            {
+                stream << "slli a1, a1, 2" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::FLOAT)
+            {
+                stream << "slli a1, a1, 2" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::DOUBLE)
+            {
+                stream << "slli a1, a1, 3" << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("VariableCall: TypeSpecifier not supported");
+            }
+
+            if (symbol.isPointer == 1){
+                stream << "li t0, " << symbol.offset << std::endl;
+                stream << "add t0, t0, s0" << std::endl;
+                stream << "lw t0, 0(t0)" << std::endl;
+                stream << "add "<< destReg <<", a1, t0" << std::endl;
+            } else {
+                stream << "li t0, " << symbol.offset << std::endl;
+                stream << "add "<< destReg <<", a1, t0" << std::endl;
+                stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
+            }
+
+            if (symbol.type == TypeSpecifier::INT)
+            {
+                stream << "lw "<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::FLOAT)
+            {
+                stream << "flw f"<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::DOUBLE)
+            {
+                stream << "fld f"<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
+            else
+            {
+                throw std::runtime_error("VariableCall: TypeSpecifier not supported");
+            }
+
+
+
         }
 
-        //int offset = context->GetScopedSymbol(identifier_)->offset;
-        //stream << "lw "<< destReg <<", " << offset << "(s0)" << std::endl;
+
+
     }
 
     void VariableCall::Print(std::ostream& stream) const
@@ -129,37 +174,39 @@ namespace ast {
         }
         else
         {
-            stream << "add sp, sp, -4" << std::endl;
-            stream << "sw a4, 0(sp)" << std::endl;
-            index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
-            stream << "li t0, -4" << std::endl;
-            stream << "mul a1, a1, t0" << std::endl;
             Symbol symbol = *context->GetScopedSymbol(identifier_);
-            type_checker_->SetType(symbol.type);
 
-            stream << "li t0, " << symbol.offset << std::endl;
-            stream << "add "<< destReg <<", a1, t0" << std::endl;
-            stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
-
+            index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
             if (symbol.type == TypeSpecifier::INT)
             {
-                stream << "lw "<< destReg <<", 0("<< destReg <<")" << std::endl;
+                stream << "slli a1, a1, 2" << std::endl;
             }
             else if (symbol.type == TypeSpecifier::FLOAT)
             {
-                stream << "flw f"<< destReg <<", 0("<< destReg <<")" << std::endl;
+                stream << "slli a1, a1, 2" << std::endl;
             }
             else if (symbol.type == TypeSpecifier::DOUBLE)
             {
-                stream << "fld f"<< destReg <<", 0("<< destReg <<")" << std::endl;
+                stream << "slli a1, a1, 3" << std::endl;
             }
             else
             {
                 throw std::runtime_error("VariableCall: TypeSpecifier not supported");
             }
+            if (symbol.isPointer == 1){
+                stream << "li t0, " << symbol.offset << std::endl;
+                stream << "add t0, t0, s0" << std::endl;
+                stream << "lw t0, 0(t0)" << std::endl;
+                stream << "add "<< destReg <<", a1, t0" << std::endl;
+                return;
+            }
 
-            stream << "lw a4, 0(sp)" << std::endl;
-            stream << "add sp, sp, 4" << std::endl;
+            stream << "li t0, " << symbol.offset << std::endl;
+            stream << "add "<< destReg <<", a1, t0" << std::endl;
+            stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
+
+
+
         }
     }
 
@@ -167,15 +214,15 @@ namespace ast {
     {
 
         Symbol symbol = *context->GetScopedSymbol(identifier_->GetIdentifier());
-        if (identifier_->IsArray() == -1)
+        if (identifier_->IsArray() == -1 && identifier_->IsPointer(context) != -1)
         {
-            // gets the offset of the variable and moves it into a3
+            // gets the offset of the variable and moves it into a2
             stream << "li a2, " << symbol.offset << std::endl;
             stream  << "add a2, a2, s0" << std::endl;
         }
         else
         {
-            // get the address of the array into a3
+            // get the address of the array into a2
             identifier_->EmitValueRISC(stream, context, "a2");
         }
 

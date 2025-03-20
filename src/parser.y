@@ -111,8 +111,8 @@ initializer
 	: expression
 
 declarator
-	: direct_declarator { $$ = $1; }
-	| pointer direct_declarator { $$ = $2; }
+	: direct_declarator { $$ = new Declarator(NodePtr($1), 0); }
+	| pointer direct_declarator { $$ = new Declarator(NodePtr($2), 1); }
 	;
 
 direct_declarator
@@ -224,8 +224,8 @@ unary_expression
 	| INC_OP unary_expression
 	| DEC_OP unary_expression
 	| '-' postfix_expression {   $$ = new Negation(NodePtr($2)); }
-	| '&' unary_expression { $$ = $2; }
-	| '*' unary_expression
+	| '&' unary_expression { $$ = new AddressOfExpr(NodePtr($2)); }
+	| '*' unary_expression { $$ = new DereferenceExpr(NodePtr($2)); }
 	| '~' unary_expression
 	| '!' unary_expression
 	| SIZEOF unary_expression

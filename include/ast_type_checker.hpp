@@ -2,12 +2,21 @@
 
 namespace ast {
 
-    class TypeChecker
-    {
-    private:
-        TypeSpecifier type_ = TypeSpecifier::VOID;
-    public:
-        TypeSpecifier GetType() const { return type_; }
-        void SetType(TypeSpecifier type) { type_ = type; }
-    };
+    inline TypeSpecifier CalculateType(TypeSpecifier lhs, TypeSpecifier rhs) {
+        if (lhs == TypeSpecifier::DOUBLE || rhs == TypeSpecifier::DOUBLE) {
+            return TypeSpecifier::DOUBLE;
+        }
+        if (lhs == TypeSpecifier::FLOAT || rhs == TypeSpecifier::FLOAT) {
+            return TypeSpecifier::FLOAT;
+        }
+        return TypeSpecifier::INT;
+    }
+
+    inline int CalculatePointer(int lhs, int rhs) {
+        if (lhs == 1 || rhs == 1) {
+            return 1;
+        }
+        return 0;
+    }
+
 } // namespace ast

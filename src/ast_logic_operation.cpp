@@ -1,27 +1,28 @@
 #include "ast_logic_operation.hpp"
 
 namespace ast {
-    void LessThanExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg,  TypeSpecifier type) const
+    void LessThanExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg,  TypeSpecifier ) const
     {
-        lhs_->EmitRISC(stream, context, "a4", type);
-        TypeSpecifier op_type = lhs_->GetType();
-        rhs_->EmitRISC(stream, context, "a5", type);
-        if (op_type == TypeSpecifier::INT)
+        TypeSpecifier lhs_type = lhs_->GetType(context);
+        TypeSpecifier rhs_type = rhs_->GetType(context);
+        TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
+
+        lhs_->EmitRISC(stream, context, "a4", result_type);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw a4, 0(sp)" << std::endl;
+        rhs_->EmitRISC(stream, context, "a5", result_type);
+        stream << "lw a4, 0(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
+        if (result_type == TypeSpecifier::INT)
         {
-
-
             stream << "slt "<< destReg <<",a4,a5" << std::endl;
         }
-        else if (op_type == TypeSpecifier::FLOAT)
+        else if (result_type == TypeSpecifier::FLOAT)
         {
-
-
             stream << "flt.s "<< destReg <<",fa4,fa5" << std::endl;
         }
-        else if (op_type == TypeSpecifier::DOUBLE)
+        else if (result_type == TypeSpecifier::DOUBLE)
         {
-
-
             stream << "flt.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -38,24 +39,34 @@ namespace ast {
         stream << ")";
     }
 
-    void GreaterThanExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    void GreaterThanExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        if (type == TypeSpecifier::INT)
+        TypeSpecifier lhs_type = lhs_->GetType(context);
+        TypeSpecifier rhs_type = rhs_->GetType(context);
+        TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
+
+        lhs_->EmitRISC(stream, context, "a4", result_type);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw a4, 0(sp)" << std::endl;
+        rhs_->EmitRISC(stream, context, "a5", result_type);
+        stream << "lw a4, 0(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
+        if (result_type == TypeSpecifier::INT)
         {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+
+
             stream << "sgt "<< destReg <<",a4,a5" << std::endl;
         }
-        else if (type == TypeSpecifier::FLOAT)
+        else if (result_type == TypeSpecifier::FLOAT)
         {
-            lhs_->EmitRISC(stream, context, "a5", type);
-            rhs_->EmitRISC(stream, context, "a4", type);
+
+
             stream << "flt.s "<< destReg <<",fa4,fa5" << std::endl;
         }
-        else if (type == TypeSpecifier::DOUBLE)
+        else if (result_type == TypeSpecifier::DOUBLE)
         {
-            lhs_->EmitRISC(stream, context, "a5", type);
-            rhs_->EmitRISC(stream, context, "a4", type);
+
+
             stream << "flt.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -72,25 +83,35 @@ namespace ast {
         stream << ")";
     }
 
-    void LessThanEqualExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    void LessThanEqualExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        if (type == TypeSpecifier::INT)
+        TypeSpecifier lhs_type = lhs_->GetType(context);
+        TypeSpecifier rhs_type = rhs_->GetType(context);
+        TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
+
+        lhs_->EmitRISC(stream, context, "a4", result_type);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw a4, 0(sp)" << std::endl;
+        rhs_->EmitRISC(stream, context, "a5", result_type);
+        stream << "lw a4, 0(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
+        if (result_type == TypeSpecifier::INT)
         {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+
+
             stream << "sgt "<< destReg <<",a4,a5" << std::endl;
             stream << "xori "<< destReg <<","<< destReg <<",1" << std::endl;
         }
-        else if (type == TypeSpecifier::FLOAT)
+        else if (result_type == TypeSpecifier::FLOAT)
         {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+
+
             stream << "fle.s "<< destReg <<",fa4,fa5" << std::endl;
         }
-        else if (type == TypeSpecifier::DOUBLE)
+        else if (result_type == TypeSpecifier::DOUBLE)
         {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+
+
             stream << "fle.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -107,24 +128,32 @@ namespace ast {
         stream << ")";
     }
 
-    void GreaterThanEqualExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    void GreaterThanEqualExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        if (type == TypeSpecifier::INT){
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        TypeSpecifier lhs_type = lhs_->GetType(context);
+        TypeSpecifier rhs_type = rhs_->GetType(context);
+        TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
+
+        lhs_->EmitRISC(stream, context, "a4", result_type);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw a4, 0(sp)" << std::endl;
+        rhs_->EmitRISC(stream, context, "a5", result_type);
+        stream << "lw a4, 0(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
+        if (result_type == TypeSpecifier::INT){
             stream << "slt "<< destReg <<",a4,a5" << std::endl;
             stream << "xori "<< destReg <<","<< destReg <<",1" << std::endl;
         }
-        else if (type == TypeSpecifier::FLOAT)
+        else if (result_type == TypeSpecifier::FLOAT)
         {
-            lhs_->EmitRISC(stream, context, "a5", type);
-            rhs_->EmitRISC(stream, context, "a4", type);
+
+
             stream << "fle.s "<< destReg <<",fa4,fa5" << std::endl;
         }
-        else if (type == TypeSpecifier::DOUBLE)
+        else if (result_type == TypeSpecifier::DOUBLE)
         {
-            lhs_->EmitRISC(stream, context, "a5", type);
-            rhs_->EmitRISC(stream, context, "a4", type);
+
+
             stream << "fle.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -141,22 +170,30 @@ namespace ast {
         stream << ")";
     }
 
-    void EqualityExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    void EqualityExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        if(type == TypeSpecifier::INT) {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        TypeSpecifier lhs_type = lhs_->GetType(context);
+        TypeSpecifier rhs_type = rhs_->GetType(context);
+        TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
+
+        lhs_->EmitRISC(stream, context, "a4", result_type);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw a4, 0(sp)" << std::endl;
+        rhs_->EmitRISC(stream, context, "a5", result_type);
+        stream << "lw a4, 0(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
+        if(result_type == TypeSpecifier::INT) {
             stream << "sub "<< destReg <<",a4,a5" << std::endl;
             stream << "seqz "<< destReg <<","<< destReg << std::endl;
         }
-        else if(type == TypeSpecifier::FLOAT) {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        else if(result_type == TypeSpecifier::FLOAT) {
+
+
             stream << "feq.s "<< destReg <<",fa4,fa5" << std::endl;
         }
-        else if(type == TypeSpecifier::DOUBLE) {
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        else if(result_type == TypeSpecifier::DOUBLE) {
+
+
             stream << "feq.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else {
@@ -173,22 +210,30 @@ namespace ast {
         stream << ")";
     }
 
-    void InequalityExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    void InequalityExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        if(type == TypeSpecifier::INT){
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        TypeSpecifier lhs_type = lhs_->GetType(context);
+        TypeSpecifier rhs_type = rhs_->GetType(context);
+        TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
+
+        lhs_->EmitRISC(stream, context, "a4", result_type);
+        stream << "addi sp, sp, -4" << std::endl;
+        stream << "sw a4, 0(sp)" << std::endl;
+        rhs_->EmitRISC(stream, context, "a5", result_type);
+        stream << "lw a4, 0(sp)" << std::endl;
+        stream << "addi sp, sp, 4" << std::endl;
+        if(result_type == TypeSpecifier::INT){
             stream << "sub "<< destReg <<",a4,a5" << std::endl;
             stream << "snez "<< destReg <<","<< destReg << std::endl;
         }
-        else if(type == TypeSpecifier::FLOAT){
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        else if(result_type == TypeSpecifier::FLOAT){
+
+
             stream << "fne.s "<< destReg <<",fa4,fa5" << std::endl;
         }
-        else if(type == TypeSpecifier::DOUBLE){
-            lhs_->EmitRISC(stream, context, "a4", type);
-            rhs_->EmitRISC(stream, context, "a5", type);
+        else if(result_type == TypeSpecifier::DOUBLE){
+
+
             stream << "fne.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else{

@@ -3,9 +3,9 @@
 namespace ast {
     int Context::label_counter_ = 1;
     FunctionTable Context::function_table_ = FunctionTable();
-    int Context::AddSymbol(const std::string& name, const TypeSpecifier& type)
+    int Context::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer)
     {
-        return symbol_table_.AddSymbol(name, type);
+        return symbol_table_.AddSymbol(name, type, isPointer);
     }
     const Symbol* Context::GetSymbol(const std::string& name) const
     {

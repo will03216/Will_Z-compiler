@@ -14,7 +14,8 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType() const override { return TypeSpecifier::INT; }
+    TypeSpecifier GetType(std::shared_ptr<Context>) const override { return TypeSpecifier::INT; }
+    int IsPointer(std::shared_ptr<Context>) const override { return 0; }
 };
 
 class FloatConstant : public Node
@@ -27,7 +28,8 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType() const override { return TypeSpecifier::FLOAT; }
+    TypeSpecifier GetType(std::shared_ptr<Context>) const override { return TypeSpecifier::FLOAT; }
+    int IsPointer(std::shared_ptr<Context>) const override { return 0; }
 };
 
 class DoubleConstant : public Node
@@ -40,7 +42,8 @@ public:
 
     void EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const override;
     void Print(std::ostream& stream) const override;
-    TypeSpecifier GetType() const override { return TypeSpecifier::DOUBLE; }
+    TypeSpecifier GetType(std::shared_ptr<Context>) const override { return TypeSpecifier::DOUBLE; }
+    int IsPointer(std::shared_ptr<Context>) const override { return 0; }
 };
 
 } // namespace ast
