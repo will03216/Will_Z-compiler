@@ -6,6 +6,7 @@ namespace ast {
     FunctionTable Context::function_table_ = FunctionTable();
     LiteralTable Context::literal_table_ = LiteralTable();
     std::string Context::exit_label_ = "exit";
+    TypeTable Context::type_table_ = TypeTable();
 
     int Context::AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer, int size, std::string structIdentifier)
     {

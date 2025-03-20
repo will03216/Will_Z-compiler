@@ -14,6 +14,8 @@
     int yylex(void);
     void yyerror(const char*);
 	int yylex_destroy(void);
+
+	void update_types(std::string new_type);
 }
 
 %union{
@@ -39,17 +41,17 @@
 %type <node> equality_expression and_expression exclusive_or_expression inclusive_or_expression logical_and_expression logical_or_expression
 %type <node> conditional_expression assignment_expression expression constant_expression declaration init_declarator_list
 %type <node> init_declarator struct_specifier  struct_declaration specifier_qualifier_list struct_declarator_list
-%type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration declaration_specifiers
-%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement initializer type_specifier
+%type <node> struct_declarator enum_specifier enumerator declarator direct_declarator pointer parameter_declaration declaration_specifiers
+%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement initializer type_specifier storage_class_specifier
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement switch_case default_case
 
 
 %type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list  initializer_list labeled_statement_list
-%type <node_list> struct_declaration_list
+%type <node_list> struct_declaration_list enumerator_list
 
 %type <number_int> INT_CONSTANT
 %type <number_float> FLOAT_CONSTANT
-%type <string> IDENTIFIER assignment_operator STRING_LITERAL
+%type <string> IDENTIFIER assignment_operator STRING_LITERAL TYPE_NAME
 //%type <type_specifier>
 
 
@@ -82,6 +84,10 @@ function_definition
 declaration
 	: declaration_specifiers ';'
 	| declaration_specifiers init_declarator ';' { $$ = new VariableDeclare(NodePtr($1), NodePtr($2)); }
+	| TYPEDEF declaration_specifiers init_declarator ';' {
+		$$ = new TypedefDeclare(NodePtr($2), NodePtr($3));
+		update_types($3->GetIdentifier());
+	}
 	;
 
 declaration_specifiers
@@ -112,7 +118,7 @@ type_specifier
 	}
     | struct_specifier { $$ = $1; }
 	| enum_specifier
-	| TYPE_NAME
+	| TYPE_NAME { $$ = new TypeName(std::move(*$1)); delete $1; }
 	;
 
 struct_specifier
@@ -142,19 +148,19 @@ struct_declarator
 	;
 
 enum_specifier
-	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM IDENTIFIER
+	: ENUM '{' enumerator_list '}' { $$ = new EnumSpecifier(nullptr, NodePtr($3)); }
+	| ENUM IDENTIFIER '{' enumerator_list '}' { $$ = new EnumSpecifier(std::move(*$2), NodePtr($4)); delete $2; }
+	| ENUM IDENTIFIER { $$ = new TypeSpecifierNode(TypeSpecifier::INT); }
 	;
 
 enumerator_list
-	: enumerator
-	| enumerator_list ',' enumerator
+	: enumerator { $$ = new NodeList(NodePtr($1)); }
+	| enumerator_list ',' enumerator { $1->PushBack(NodePtr($3)); $$=$1; }
 	;
 
 enumerator
-	: IDENTIFIER
-	| IDENTIFIER '=' constant_expression
+	: IDENTIFIER { $$ = new EnumMember(std::move(*$1), nullptr); delete $1; }
+	| IDENTIFIER '=' constant_expression  { $$ = new EnumMember(std::move(*$1), NodePtr($3)); delete $1; }
 	;
 
 init_declarator

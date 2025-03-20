@@ -37,6 +37,12 @@ namespace ast {
             table_[name] = {structIdentifier, type, offset_, -1, isPointer};
             return offset_;
         }
+        else if (type == TypeSpecifier::ENUM)
+        {
+            // Lazy implementation, change it later
+            table_[name] = {name, type, isPointer, -1, isPointer};
+            return isPointer;
+        }
         else
         {
             throw std::runtime_error("SymbolTable: TypeSpecifier not supported");

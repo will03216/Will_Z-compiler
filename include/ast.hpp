@@ -27,4 +27,6 @@
 #include "ast_string.hpp"
 #include "ast_type_node.hpp"
 #include "ast_struct.hpp"
+#include "ast_enum.hpp"
+#include "ast_typedef.hpp"
 ast::NodePtr ParseAST(std::string file_name);

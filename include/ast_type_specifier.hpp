@@ -15,7 +15,8 @@ enum class TypeSpecifier
     SIGNED,
     UNSIGNED,
     STRUCT,
-    ENUM
+    ENUM,
+    TYPEDEF
 };
 
 template<typename LogStream>
@@ -42,9 +43,13 @@ LogStream& operator<<(LogStream& ls, const TypeSpecifier& type)
             return "struct";
         case TypeSpecifier::ENUM:
             return "enum";
+        case TypeSpecifier::TYPEDEF:
+            return "typedef";
         }
         throw std::runtime_error("Unexpected type specifier");
     };
     return ls << TypeToString();
 }
+
+
 } // namespace ast

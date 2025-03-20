@@ -10,6 +10,7 @@
 #include "ast_function_table.hpp"
 #include "ast_literals.hpp"
 #include "ast_struct_table.hpp"
+#include "ast_type_table.hpp"
 
 namespace ast {
 
@@ -26,11 +27,14 @@ private:
     StructTable struct_table_;
 
 
+
     // Private constructor to enforce shared_ptr management
     explicit Context(std::shared_ptr<Context> parent_context = nullptr, int offset = -20, StructTable struct_table = StructTable())
         : parent_context_(std::move(parent_context)), symbol_table_(SymbolTable(offset)), struct_table_(struct_table) {}
 
 public:
+    static TypeTable type_table_;
+
     // Factory function to ensure Context is always created as a shared_ptr
     static std::shared_ptr<Context> Create(std::shared_ptr<Context> parent_context = nullptr, int offset = -20, StructTable struct_table = StructTable())
     {
@@ -159,9 +163,24 @@ public:
         {
             return parent_context_->GetMember(struct_identifier, member_identifier);
         }
+    }
 
+    TypeStruct GetType(const std::string& name) const
+    {
+        return type_table_.GetType(name);
+    }
+
+    void AddType(const std::string& name, TypeSpecifier type, int size, int is_pointer)
+    {
+        type_table_.AddType(name, type, size, is_pointer);
+    }
+
+    bool HasType(const std::string& name) const
+    {
+        return type_table_.HasType(name);
     }
 
     ~Context() = default;
 };
-}
+
+} // namespace ast

@@ -7,9 +7,22 @@
   extern "C" int fileno(FILE *stream);
 
   #include "parser.tab.hpp"
+  #include "ast_context.hpp"
+  #include <unordered_map>
 
   // Suppress warning about unused function
   [[maybe_unused]] static void yyunput (int c, char * yy_bp );
+
+  // The parser will need to know about the tokens we define here
+  std::unordered_map<std::string, std::string> types;
+
+  void update_types(std::string new_type) {
+    types[new_type] = new_type;
+  }
+
+  bool has_type(std::string type) {
+    return types.find(type) != types.end();
+  }
 %}
 
 D	  [0-9]
@@ -55,13 +68,22 @@ IS  (u|U|l|L)*
 "volatile"	{return(VOLATILE);}
 "while"			{return(WHILE);}
 
-{L}({L}|{D})*		{yylval.string = new std::string(yytext); return(IDENTIFIER);}
+{L}({L}|{D})* {
+    std::string identifier(yytext);
+    if (has_type(identifier)) {
+        yylval.string = new std::string(yytext);
+        std::cout << "Found type: " << identifier << std::endl;
+        return(TYPE_NAME);
+    } else {
+        yylval.string = new std::string(yytext);
+        return(IDENTIFIER);
+    }
+}
 
 0[xX]{H}+{IS}?		{yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 0{D}+{IS}?		    {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 {D}+{IS}?		      {yylval.number_int = (int)strtol(yytext, NULL, 0); return(INT_CONSTANT);}
 L?'(\\.|[^\\'])+'	{yylval.number_int =  yytext[1]; return(INT_CONSTANT);}
-
 
 {D}+{E}{FS}?		        {yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}
 {D}*"."{D}+({E})?{FS}?	{yylval.number_float = strtod(yytext, NULL); return(FLOAT_CONSTANT);}

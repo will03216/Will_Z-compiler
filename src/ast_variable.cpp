@@ -6,6 +6,8 @@ namespace ast {
     void VariableDeclare::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier ) const
     {
         TypeSpecifier type = declaration_specifiers_->GetType(context);
+        int is_pointer = init_declarator_->IsPointer(context) + declaration_specifiers_->IsPointer(context);
+
         if (init_declarator_->IsArray() == -1)
         {
             std::string identifier = init_declarator_->GetIdentifier();
@@ -13,9 +15,9 @@ namespace ast {
             {
                 throw std::runtime_error("Variable already declared");
             }
-            int offset = context->AddSymbol(identifier, type, init_declarator_->IsPointer(context));
+            int offset = context->AddSymbol(identifier, type, is_pointer);
 
-            if (init_declarator_->IsPointer(context) == 1)
+            if (is_pointer == 1)
             {
                 init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::INT);
                 stream << "sw a5, " << offset << "(s0)" << std::endl;
@@ -46,7 +48,7 @@ namespace ast {
             {
                 std::string structIdentifier = declaration_specifiers_->GetIdentifier();
                 const Struct* s = context->GetStruct(structIdentifier);
-                context->AddSymbol(identifier, type, init_declarator_->IsPointer(context), s->size, structIdentifier);
+                context->AddSymbol(identifier, type, is_pointer, s->size, structIdentifier);
                 int offset = context->GetSymbol(identifier)->offset;
                 int index = 0;
                 if (s == nullptr)
@@ -179,6 +181,10 @@ namespace ast {
             else if (symbol.type == TypeSpecifier::STRUCT)
             {
                 stream << "add " << destReg << ", s0, " << symbol.offset << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::ENUM)
+            {
+                stream << "li " << destReg << ", " << symbol.offset << std::endl;
             }
 
             else
@@ -546,4 +552,5 @@ namespace ast {
         stream << "--";
     }
 
-} // namespace ast
+}
+ // namespace ast
