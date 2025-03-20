@@ -7,10 +7,10 @@ namespace ast {
 
 enum class TypeSpecifier
 {
-
     INT,
     FLOAT,
     DOUBLE,
+    CHAR,
     VOID
 };
 
@@ -26,6 +26,8 @@ LogStream& operator<<(LogStream& ls, const TypeSpecifier& type)
             return "float";
         case TypeSpecifier::DOUBLE:
             return "double";
+        case TypeSpecifier::CHAR:
+            return "char";
         case TypeSpecifier::VOID:
             return "void";
         }
@@ -34,4 +36,4 @@ LogStream& operator<<(LogStream& ls, const TypeSpecifier& type)
     return ls << TypeToString();
 }
 
-}
+} // namespace ast

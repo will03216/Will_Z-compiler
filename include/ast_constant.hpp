@@ -16,6 +16,7 @@ public:
     void Print(std::ostream& stream) const override;
     TypeSpecifier GetType(std::shared_ptr<Context>) const override { return TypeSpecifier::INT; }
     int IsPointer(std::shared_ptr<Context>) const override { return 0; }
+    std::variant<int, float, double> GetConst() const override { return value_; }
 };
 
 class FloatConstant : public Node
@@ -30,6 +31,7 @@ public:
     void Print(std::ostream& stream) const override;
     TypeSpecifier GetType(std::shared_ptr<Context>) const override { return TypeSpecifier::FLOAT; }
     int IsPointer(std::shared_ptr<Context>) const override { return 0; }
+    std::variant<int, float, double> GetConst() const override { return value_; }
 };
 
 class DoubleConstant : public Node
@@ -44,6 +46,7 @@ public:
     void Print(std::ostream& stream) const override;
     TypeSpecifier GetType(std::shared_ptr<Context>) const override { return TypeSpecifier::DOUBLE; }
     int IsPointer(std::shared_ptr<Context>) const override { return 0; }
+    std::variant<int, float, double> GetConst() const override { return value_; }
 };
 
 } // namespace ast

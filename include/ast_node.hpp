@@ -4,8 +4,10 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include "ast_scope.hpp"
+#include <variant>
+
 #include "ast_context.hpp"
+#include "ast_scope.hpp"
 #include "ast_type_specifier.hpp"
 #include "ast_symbol_table.hpp"
 #include "ast_type_checker.hpp"
@@ -27,6 +29,10 @@ public:
     virtual std::vector<TypeSpecifier> GetTypes(std::shared_ptr<Context> ) const { return {}; };
     virtual int IsPointer(std::shared_ptr<Context> ) const { return 0; };
     virtual std::vector<Symbol> GetSymbols(std::shared_ptr<Context> ) const { return {}; };
+    virtual std::vector<std::unique_ptr<const Node>> GetValues() const { return {}; };
+    virtual std::variant<int, float, double> GetConst() const { return 0; };
+    virtual std::vector<std::variant<int, float, double>> GetConstList() const { return {}; };
+
 
 };
 
@@ -52,6 +58,8 @@ public:
     virtual void EmitValueRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg) const override;
     virtual std::vector<TypeSpecifier> GetTypes(std::shared_ptr<Context> context) const override;
     virtual std::vector<Symbol> GetSymbols(std::shared_ptr<Context> context) const override;
+    virtual TypeSpecifier GetType(std::shared_ptr<Context> context) const override;
+    virtual std::vector<std::variant<int, float, double>> GetConstList() const override;
+};
 
-};// namespace ast
-}
+} // namespace ast

@@ -24,6 +24,13 @@ namespace ast {
             offset_ -= 8;
             return temp;
         }
+        else if (type == TypeSpecifier::CHAR)
+        {
+            table_[name] = {name, type, offset_, -1, isPointer};
+            int temp = offset_;
+            offset_ -= 1;
+            return temp;
+        }
         else
         {
             throw std::runtime_error("SymbolTable: TypeSpecifier not supported");
@@ -58,6 +65,11 @@ namespace ast {
             offset_ -= 8 * size;
             table_[name] = {name, type, offset_ + 8, size, false};
             return offset_+8;
+        }
+        else if (type == TypeSpecifier::CHAR){
+            offset_ -= size;
+            table_[name] = {name, type, offset_ + 1, size, false};
+            return offset_+1;
         }
         else
         {

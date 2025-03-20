@@ -17,4 +17,13 @@ namespace ast {
             initializer_->Print(stream);
         }
     }
+    void Initializer::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    {
+        expression_->EmitRISC(stream, context, destReg, type);
+    }
+
+    void Initializer::Print(std::ostream& stream) const
+    {
+        expression_->Print(stream);
+    }
 }

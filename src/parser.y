@@ -40,15 +40,15 @@
 %type <node> conditional_expression assignment_expression expression constant_expression declaration init_declarator_list
 %type <node> init_declarator struct_specifier struct_declaration_list struct_declaration specifier_qualifier_list struct_declarator_list
 %type <node> struct_declarator enum_specifier enumerator_list enumerator declarator direct_declarator pointer parameter_declaration
-%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator initializer initializer_list statement labeled_statement
+%type <node> identifier_list type_name abstract_declarator direct_abstract_declarator statement labeled_statement initializer
 %type <node> compound_statement declaration_list expression_statement selection_statement iteration_statement jump_statement switch_case default_case
 
 
-%type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list
+%type <node_list> statement_list parameter_list argument_expression_list translation_unit switch_case_list  initializer_list
 
-%type <number_int> INT_CONSTANT STRING_LITERAL
+%type <number_int> INT_CONSTANT
 %type <number_float> FLOAT_CONSTANT
-%type <string> IDENTIFIER assignment_operator
+%type <string> IDENTIFIER assignment_operator STRING_LITERAL
 %type <type_specifier> type_specifier declaration_specifiers
 
 
@@ -100,6 +100,9 @@ type_specifier
 	| DOUBLE {
 		$$ = TypeSpecifier::DOUBLE;
 	}
+	| CHAR {
+		$$ = TypeSpecifier::CHAR;
+	}
 	;
 
 init_declarator
@@ -108,7 +111,16 @@ init_declarator
 	;
 
 initializer
-	: expression
+	: assignment_expression { $$ = new Initializer(NodePtr($1)); }
+	| '{' initializer_list '}' { $$ = new Initializer(NodePtr($2)); }
+	| '{' initializer_list ',' '}' { $$ = new Initializer(NodePtr($2)); }
+	;
+
+initializer_list
+	: initializer {$$ = new NodeList(NodePtr($1));}
+	| initializer_list ',' initializer { $1->PushBack(NodePtr($3)); $$=$1; }
+	;
+
 
 declarator
 	: direct_declarator { $$ = new Declarator(NodePtr($1), 0); }
@@ -130,6 +142,7 @@ direct_declarator
 		$$ = new DirectDeclarator(NodePtr($1), nullptr, $3);
 	}
 	;
+
 pointer
 	: '*' {  }
 	| '*' pointer {  }
@@ -147,6 +160,34 @@ parameter_list
 
 parameter_declaration
 	: declaration_specifiers declarator { $$ = new Parameter($1, NodePtr($2)); }
+	;
+
+specifier_qualifier_list
+	: type_specifier specifier_qualifier_list
+	| type_specifier { $$ = new TypeSpecifierNode($1); }
+	;
+
+type_name
+	: specifier_qualifier_list { $$ = $1; }
+	| specifier_qualifier_list abstract_declarator
+	;
+
+abstract_declarator
+	: pointer
+	| direct_abstract_declarator
+	| pointer direct_abstract_declarator
+	;
+
+direct_abstract_declarator
+	: '(' abstract_declarator ')'
+	| '[' ']'
+	| '[' constant_expression ']'
+	| direct_abstract_declarator '[' ']'
+	| direct_abstract_declarator '[' constant_expression ']'
+	| '(' ')'
+	| '(' parameter_list ')'
+	| direct_abstract_declarator '(' ')'
+	| direct_abstract_declarator '(' parameter_list ')'
 	;
 
 statement
@@ -184,6 +225,7 @@ primary_expression
     | IDENTIFIER { $$ = new Identifier(std::move(*$1)); delete $1; }
 	| '(' expression ')' { $$ = $2; }
 	| FLOAT_CONSTANT { $$ = new FloatConstant($1); }
+	| STRING_LITERAL { $$ = new StringLiteral(std::move(*$1)); delete $1; }
 	;
 
 postfix_expression
@@ -228,7 +270,8 @@ unary_expression
 	| '*' unary_expression { $$ = new DereferenceExpr(NodePtr($2)); }
 	| '~' unary_expression
 	| '!' unary_expression
-	| SIZEOF unary_expression
+	| SIZEOF unary_expression { $$ = new SizeOfExpr(NodePtr($2)); }
+    | SIZEOF '(' type_name ')' { $$ = new SizeOfExpr(NodePtr($3)); }
 	;
 
 cast_expression

@@ -8,20 +8,24 @@
 #include "ast_type_specifier.hpp"
 #include "ast_reg_stack.hpp"
 #include "ast_function_table.hpp"
+#include "ast_literals.hpp"
 
 namespace ast {
+
 class Context : public std::enable_shared_from_this<Context>
 {
 private:
     std::shared_ptr<Context> parent_context_;
     SymbolTable symbol_table_;
     static int label_counter_ ;
-    static std::unordered_map<std::string, std::vector<TypeSpecifier>> function_parameters_;
     std::string function_call_name_;
     std::string exit_label_;
     static FunctionTable function_table_;
     //reg stack not used
     RegStack reg_stack_;
+    static LiteralTable literal_table_;
+
+
     // Private constructor to enforce shared_ptr management
     explicit Context(std::shared_ptr<Context> parent_context = nullptr, int offset = -20, RegStack reg_stack = RegStack())
         : parent_context_(std::move(parent_context)), symbol_table_(SymbolTable(offset)), reg_stack_(reg_stack) {}
@@ -32,28 +36,33 @@ public:
     {
         return std::shared_ptr<Context>(new Context(std::move(parent_context), offset, reg_stack));
     }
+
     // Adds a symbol to the current context.
     int AddSymbol(const std::string& name, const TypeSpecifier& type, int isPointer = 0);
+
     // Returns the symbol with the given name in the current context.
     const Symbol* GetSymbol(const std::string& name) const;
+
     // Checks if a symbol with the given name exists in the current context.
     bool HasSymbol(const std::string& name) const;
+
     // Creates a child context with a reference to the current context.
     std::shared_ptr<Context> CreateChildContext()
     {
-
         int offset = symbol_table_.GetOffset();
         RegStack reg_stack = reg_stack_;
         return Create(shared_from_this(), offset, reg_stack);
     }
+
     // Searches for a symbol in the current context and then in parent contexts.
     const Symbol* GetScopedSymbol(const std::string& name) const;
+
+    // Returns a new label for the current context.
     std::string GetNewLabel();
 
-    void AddArray(const std::string& name, const TypeSpecifier& type, int size) {
-        symbol_table_.AddArray(name, type, size);
+    int AddArray(const std::string& name, const TypeSpecifier& type, int size) {
+        return symbol_table_.AddArray(name, type, size);
     }
-
 
     void SetFunctionCallName(const std::string& name) {
         function_call_name_ = name;
@@ -116,7 +125,21 @@ public:
         return function_table_.HasFunction(name);
     }
 
+    void ConstructLiterals(std::ostream& stream)
+    {
+        literal_table_.ConstructLiterals(stream);
+    }
+
+    int AddString(std::string value)
+    {
+        return literal_table_.AddString(value);
+    }
+
+    int GetStringLabel(std::string value)
+    {
+        return literal_table_.GetStringLabel(value);
+    }
+
     ~Context() = default;
 };
-
-} // namespace ast
+}

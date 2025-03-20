@@ -4,7 +4,7 @@ namespace ast {
 
     void IntConstant::EmitRISC(std::ostream& stream, std::shared_ptr<Context> , std::string destReg, TypeSpecifier type) const
 {
-    if (type == TypeSpecifier::INT)
+    if (type == TypeSpecifier::INT || type == TypeSpecifier::CHAR)
     {
         stream << "li "<< destReg <<", " << value_ << std::endl;
     }

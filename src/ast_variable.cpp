@@ -29,6 +29,12 @@ namespace ast {
                 init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::DOUBLE);
                 stream << "fsd fa5, " << offset << "(s0)" << std::endl;
             }
+            else if (declaration_specifiers_ == TypeSpecifier::CHAR)
+            {
+                init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::CHAR);
+                stream << "sb a5, " << offset << "(s0)" << std::endl;
+            }
+
             else
             {
                 throw std::runtime_error("VariableDeclare: TypeSpecifier not supported");
@@ -40,7 +46,44 @@ namespace ast {
             {
                 throw std::runtime_error("Variable already declared");
             }
-            context->AddArray(identifier, declaration_specifiers_, init_declarator_->IsArray());
+            int offset = context->AddArray(identifier, declaration_specifiers_, init_declarator_->IsArray());
+
+            std::vector<std::variant<int, float, double>> constList = init_declarator_->GetConstList();
+            int size = static_cast<int>(constList.size());
+            if (size > init_declarator_->IsArray())
+            {
+                std::cout << size << " " << init_declarator_->IsArray() << std::endl;
+                throw std::runtime_error("VariableDeclare: Array size is too small");
+            }
+
+            for (int i = 0; i < size; i++)
+            {
+                if (declaration_specifiers_ == TypeSpecifier::INT)
+                {
+                    stream << "li a5, " << std::get<int>(constList[i]) << std::endl;
+                    stream << "sw a5, " << offset + i * 4 << "(s0)" << std::endl;
+                }
+                else if (declaration_specifiers_ == TypeSpecifier::FLOAT)
+                {
+                    stream << "li a5, " << std::get<float>(constList[i]) << std::endl;
+                    stream << "fsw fa5, " << offset + i * 4 << "(s0)" << std::endl;
+                }
+                else if (declaration_specifiers_ == TypeSpecifier::DOUBLE)
+                {
+                    stream << "li a5, " << std::get<double>(constList[i]) << std::endl;
+                    stream << "fsd fa5, " << offset + i * 8 << "(s0)" << std::endl;
+                }
+                else if (declaration_specifiers_ == TypeSpecifier::CHAR)
+                {
+                    stream << "li a5, " << std::get<int>(constList[i]) << std::endl;
+                    stream << "sb a5, " << offset + i << "(s0)" << std::endl;
+                }
+                else
+                {
+                    throw std::runtime_error("VariableDeclare: TypeSpecifier not supported");
+                }
+            }
+
         }
 
     }
@@ -79,6 +122,10 @@ namespace ast {
             {
                 stream << "fld f"<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
             }
+            else if (symbol.type == TypeSpecifier::CHAR)
+            {
+                stream << "lb "<< destReg <<", " << symbol.offset << "(s0)" << std::endl;
+            }
             else
             {
                 throw std::runtime_error("VariableCall: TypeSpecifier not supported");
@@ -86,12 +133,6 @@ namespace ast {
         }
         else
         {
-
-
-
-
-
-
             Symbol symbol = *context->GetScopedSymbol(identifier_);
             index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
             if (symbol.type == TypeSpecifier::INT)
@@ -105,6 +146,10 @@ namespace ast {
             else if (symbol.type == TypeSpecifier::DOUBLE)
             {
                 stream << "slli a1, a1, 3" << std::endl;
+            }
+            else if (symbol.type == TypeSpecifier::CHAR)
+            {
+                stream << "slli a1, a1, 0" << std::endl;
             }
             else
             {
@@ -134,17 +179,15 @@ namespace ast {
             {
                 stream << "fld f"<< destReg <<", 0("<< destReg <<")" << std::endl;
             }
+            else if (symbol.type == TypeSpecifier::CHAR)
+            {
+                stream << "lb "<< destReg <<", 0("<< destReg <<")" << std::endl;
+            }
             else
             {
                 throw std::runtime_error("VariableCall: TypeSpecifier not supported");
             }
-
-
-
         }
-
-
-
     }
 
     void VariableCall::Print(std::ostream& stream) const
@@ -175,7 +218,6 @@ namespace ast {
         else
         {
             Symbol symbol = *context->GetScopedSymbol(identifier_);
-
             index_->EmitRISC(stream, context, "a1", TypeSpecifier::INT);
             if (symbol.type == TypeSpecifier::INT)
             {
@@ -204,9 +246,6 @@ namespace ast {
             stream << "li t0, " << symbol.offset << std::endl;
             stream << "add "<< destReg <<", a1, t0" << std::endl;
             stream << "add " << destReg << ", "<< destReg <<", s0" << std::endl;
-
-
-
         }
     }
 

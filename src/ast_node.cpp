@@ -86,5 +86,27 @@ std::vector<Symbol> NodeList::GetSymbols(std::shared_ptr<Context> context) const
     }
     return symbols;
 }
+TypeSpecifier NodeList::GetType(std::shared_ptr<Context> context) const
+{
+    if (nodes_.empty())
+    {
+        return TypeSpecifier::VOID;
+    }
+    return nodes_.back()->GetType(context);
+}
+
+std::vector<std::variant<int, float, double>> NodeList::GetConstList() const
+{
+    std::vector<std::variant<int, float, double>> consts;
+    for (const auto& node : nodes_)
+    {
+        if (node == nullptr)
+        {
+            continue;
+        }
+        consts.push_back(node->GetConst());
+    }
+    return consts;
+}
 
 } // namespace ast

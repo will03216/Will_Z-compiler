@@ -9,6 +9,9 @@ namespace ast {
         if (lhs == TypeSpecifier::FLOAT || rhs == TypeSpecifier::FLOAT) {
             return TypeSpecifier::FLOAT;
         }
+        if (lhs == TypeSpecifier::CHAR || rhs == TypeSpecifier::CHAR) {
+            return TypeSpecifier::CHAR;
+        }
         return TypeSpecifier::INT;
     }
 

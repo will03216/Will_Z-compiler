@@ -38,9 +38,20 @@ void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> co
         exit_scope(stream);
         stream << "ret" << std::endl;
     }
+    else if (type == TypeSpecifier::CHAR)
+    {
+        if (expression_ != nullptr)
+        {
+            expression_->EmitRISC(stream, context, "a5", type);
+        }
+        stream << "mv a0,a5" << std::endl;
+        //context->ExitRegStack(stream);
+        exit_scope(stream);
+        stream << "ret" << std::endl;
+    }
     else if (type == TypeSpecifier::VOID)
     {
-        context->ExitRegStack(stream);
+
         exit_scope(stream);
         stream << "ret" << std::endl;
     }
