@@ -2,17 +2,12 @@
 
 namespace ast {
 
-    void StringLiteral::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
+    void StringLiteral::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
     {
-        if (type == TypeSpecifier::CHAR)
-        {
-            int label = context->AddString(value_);
-            stream << "la " << destReg << ", str_" << label << std::endl;
-        }
-        else
-        {
-            throw std::runtime_error("String: TypeSpecifier not supported");
-        }
+        // Load the address of the string into the destination register
+        int label = context->AddString(value_);
+        stream << "la " << destReg << ", str_" << label << std::endl;
+
     }
 
     void StringLiteral::Print(std::ostream& stream) const

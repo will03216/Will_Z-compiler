@@ -14,6 +14,13 @@ namespace ast {
             }
             int offset = context->AddSymbol(identifier, declaration_specifiers_, init_declarator_->IsPointer(context));
 
+            if (init_declarator_->IsPointer(context) == 1)
+            {
+                init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::INT);
+                stream << "sw a5, " << offset << "(s0)" << std::endl;
+                return;
+            }
+
             if (declaration_specifiers_ == TypeSpecifier::INT)
             {
                 init_declarator_->EmitRISC(stream, context, "a5", TypeSpecifier::INT);
@@ -231,6 +238,10 @@ namespace ast {
             {
                 stream << "slli a1, a1, 3" << std::endl;
             }
+            else if (symbol.type == TypeSpecifier::CHAR)
+            {
+                stream << "slli a1, a1, 0" << std::endl;
+            }
             else
             {
                 throw std::runtime_error("VariableCall: TypeSpecifier not supported");
@@ -356,6 +367,36 @@ namespace ast {
 
             stream << "fsd f" << destReg <<", 0(a2)" << std::endl;
         }
+        else if (symbol.type == TypeSpecifier::CHAR)
+        {
+            if (op_ != "="){
+                stream << "lb t0, 0(a2)" << std::endl;
+            }
+
+            expression_->EmitRISC(stream, context, destReg, symbol.type);
+            if (op_ == "+=")
+            {
+                stream << "add " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+            else if (op_ == "-=")
+            {
+                stream << "sub "<< destReg <<", t0, "<< destReg << std::endl;
+            }
+            else if (op_ == "*=")
+            {
+                stream << "mul " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+            else if (op_ == "/=")
+            {
+                stream << "div " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+            else if (op_ == "%=")
+            {
+                stream << "rem " << destReg << ", "<< destReg <<", t0" << std::endl;
+            }
+
+            stream << "sb " << destReg <<", 0(a2)" << std::endl;
+        }
         else
         {
             throw std::runtime_error("VariableAssign: TypeSpecifier not supported");
@@ -393,6 +434,12 @@ namespace ast {
             stream << "fadd.d ft0, " << destReg << ", 1" << std::endl;
             stream << "fsd ft0, " << symbol.offset << "(s0)" << std::endl;
         }
+        else if (symbol.type == TypeSpecifier::CHAR)
+        {
+            stream << "lb " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "addi t0, " << destReg << ", 1" << std::endl;
+            stream << "sb t0, " << symbol.offset << "(s0)" << std::endl;
+        }
         else
         {
             throw std::runtime_error("VariablePostInc: TypeSpecifier not supported");
@@ -425,6 +472,12 @@ namespace ast {
             stream << "fld " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
             stream << "fadd.d ft0, " << destReg << ", -1" << std::endl;
             stream << "fsd ft0, " << symbol.offset << "(s0)" << std::endl;
+        }
+        else if (symbol.type == TypeSpecifier::CHAR)
+        {
+            stream << "lb " << destReg << ", " << symbol.offset << "(s0)" << std::endl;
+            stream << "addi t0, " << destReg << ", -1" << std::endl;
+            stream << "sb t0, " << symbol.offset << "(s0)" << std::endl;
         }
         else
         {

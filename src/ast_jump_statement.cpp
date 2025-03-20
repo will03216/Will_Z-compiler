@@ -4,7 +4,18 @@ namespace ast {
 
 void ReturnStatement::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string, TypeSpecifier type) const
 {
-    //TypeSpecifier type = context->GetFunctionType();
+    int is_pointer = context->GetCurrentFunction()->is_pointer;
+    if (is_pointer == 1){
+        if (expression_ != nullptr)
+        {
+            expression_->EmitRISC(stream, context, "a5", type);
+        }
+        stream << "mv a0,a5" << std::endl;
+        //context->ExitRegStak(stream);
+        exit_scope(stream);
+        stream << "ret" << std::endl;
+        return;
+    }
 
     if(type == TypeSpecifier::INT){
         if (expression_ != nullptr)

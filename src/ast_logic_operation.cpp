@@ -13,7 +13,7 @@ namespace ast {
         rhs_->EmitRISC(stream, context, "a5", result_type);
         stream << "lw a4, 0(sp)" << std::endl;
         stream << "addi sp, sp, 4" << std::endl;
-        if (result_type == TypeSpecifier::INT)
+        if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
         {
             stream << "slt "<< destReg <<",a4,a5" << std::endl;
         }
@@ -51,22 +51,16 @@ namespace ast {
         rhs_->EmitRISC(stream, context, "a5", result_type);
         stream << "lw a4, 0(sp)" << std::endl;
         stream << "addi sp, sp, 4" << std::endl;
-        if (result_type == TypeSpecifier::INT)
+        if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
         {
-
-
             stream << "sgt "<< destReg <<",a4,a5" << std::endl;
         }
         else if (result_type == TypeSpecifier::FLOAT)
         {
-
-
             stream << "flt.s "<< destReg <<",fa4,fa5" << std::endl;
         }
         else if (result_type == TypeSpecifier::DOUBLE)
         {
-
-
             stream << "flt.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -95,23 +89,17 @@ namespace ast {
         rhs_->EmitRISC(stream, context, "a5", result_type);
         stream << "lw a4, 0(sp)" << std::endl;
         stream << "addi sp, sp, 4" << std::endl;
-        if (result_type == TypeSpecifier::INT)
+        if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
         {
-
-
             stream << "sgt "<< destReg <<",a4,a5" << std::endl;
             stream << "xori "<< destReg <<","<< destReg <<",1" << std::endl;
         }
         else if (result_type == TypeSpecifier::FLOAT)
         {
-
-
             stream << "fle.s "<< destReg <<",fa4,fa5" << std::endl;
         }
         else if (result_type == TypeSpecifier::DOUBLE)
         {
-
-
             stream << "fle.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -140,20 +128,16 @@ namespace ast {
         rhs_->EmitRISC(stream, context, "a5", result_type);
         stream << "lw a4, 0(sp)" << std::endl;
         stream << "addi sp, sp, 4" << std::endl;
-        if (result_type == TypeSpecifier::INT){
+        if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR){
             stream << "slt "<< destReg <<",a4,a5" << std::endl;
             stream << "xori "<< destReg <<","<< destReg <<",1" << std::endl;
         }
         else if (result_type == TypeSpecifier::FLOAT)
         {
-
-
             stream << "fle.s "<< destReg <<",fa4,fa5" << std::endl;
         }
         else if (result_type == TypeSpecifier::DOUBLE)
         {
-
-
             stream << "fle.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else
@@ -182,18 +166,14 @@ namespace ast {
         rhs_->EmitRISC(stream, context, "a5", result_type);
         stream << "lw a4, 0(sp)" << std::endl;
         stream << "addi sp, sp, 4" << std::endl;
-        if(result_type == TypeSpecifier::INT) {
+        if(result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR) {
             stream << "sub "<< destReg <<",a4,a5" << std::endl;
             stream << "seqz "<< destReg <<","<< destReg << std::endl;
         }
         else if(result_type == TypeSpecifier::FLOAT) {
-
-
             stream << "feq.s "<< destReg <<",fa4,fa5" << std::endl;
         }
         else if(result_type == TypeSpecifier::DOUBLE) {
-
-
             stream << "feq.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else {
@@ -222,18 +202,14 @@ namespace ast {
         rhs_->EmitRISC(stream, context, "a5", result_type);
         stream << "lw a4, 0(sp)" << std::endl;
         stream << "addi sp, sp, 4" << std::endl;
-        if(result_type == TypeSpecifier::INT){
+        if(result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR){
             stream << "sub "<< destReg <<",a4,a5" << std::endl;
             stream << "snez "<< destReg <<","<< destReg << std::endl;
         }
         else if(result_type == TypeSpecifier::FLOAT){
-
-
             stream << "fne.s "<< destReg <<",fa4,fa5" << std::endl;
         }
         else if(result_type == TypeSpecifier::DOUBLE){
-
-
             stream << "fne.d "<< destReg <<",fa4,fa5" << std::endl;
         }
         else{

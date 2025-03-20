@@ -7,7 +7,7 @@
 class LiteralTable
 {
 private:
-    int nextLabel;
+    int nextLabel = 1;
     std::unordered_map<std::string, int> stringMap;
 public:
     LiteralTable() : nextLabel(0) {}
@@ -39,7 +39,7 @@ public:
         stream << ".section .rodata" << std::endl;
         for (auto const& [key, val] : stringMap)
         {
-            stream << "str_" << val << ": .asciiz \"" << EscapeString(key) << "\"" << std::endl;
+            stream << "str_" << val << ": .asciz \"" << EscapeString(key) << "\"" << std::endl;
         }
     }
 

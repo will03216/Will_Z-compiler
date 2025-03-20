@@ -29,6 +29,10 @@ void DereferenceExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> co
     {
         stream << "fld f" << destReg << ", 0(" << destReg << ")" << std::endl;
     }
+    else if (exprType == TypeSpecifier::CHAR)
+    {
+        stream << "lb " << destReg << ", 0(" << destReg << ")" << std::endl;
+    }
     else
     {
         throw std::runtime_error("DereferenceExpr::EmitRISC: invalid type");

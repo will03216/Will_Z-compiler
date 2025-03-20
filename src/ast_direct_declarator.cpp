@@ -11,8 +11,8 @@ void DirectDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> c
     {
 
         std::vector<Symbol> symbols = parameters_->GetSymbols(context);
-        std::vector<std::string> identifiers = parameters_->GetIdentifiers();
-        std::vector<TypeSpecifier> types = parameters_->GetTypes(context);
+
+
         int index_int = 0;
         int index_float = 0;
         for (const auto& symbol : symbols)
@@ -22,6 +22,13 @@ void DirectDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> c
             int isPointer = symbol.isPointer;
             // Add array support
             int offset = context->AddSymbol(identifier, type, isPointer);
+            if (isPointer == 1)
+            {
+                stream << "sw a" << index_int << ", " << offset << "(s0)" << std::endl;
+                index_int++;
+                continue;
+            }
+
             if (type == TypeSpecifier::INT)
             {
                 stream << "sw a" << index_int << ", " << offset << "(s0)" << std::endl;
@@ -36,6 +43,11 @@ void DirectDeclarator::EmitRISC(std::ostream& stream, std::shared_ptr<Context> c
             {
                 stream << "fsd fa" << index_float << ", " << offset << "(s0)" << std::endl;
                 index_float++;
+            }
+            else if (type == TypeSpecifier::CHAR)
+            {
+                stream << "sb a" << index_int << ", " << offset << "(s0)" << std::endl;
+                index_int++;
             }
 
             else

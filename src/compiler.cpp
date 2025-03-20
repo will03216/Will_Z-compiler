@@ -73,6 +73,7 @@ void Compile(const NodePtr& root, const std::string& compile_output_path)
 
     std::ofstream output(compile_output_path, std::ios::trunc);
     root->EmitRISC(output, ctx, "a5", ast::TypeSpecifier::INT);
+    ctx->ConstructLiterals(output);
 
     std::cout << "Compiled to: " << compile_output_path << std::endl;
 }

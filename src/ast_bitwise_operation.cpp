@@ -3,7 +3,7 @@
 namespace ast {
     void BitwiseAndExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
     {
-        if (type == TypeSpecifier::INT)
+        if (type == TypeSpecifier::INT || type == TypeSpecifier::CHAR)
         {
             lhs_->EmitRISC(stream, context, "a4", type);
             stream << "addi sp, sp, -4" << std::endl;
@@ -27,7 +27,7 @@ namespace ast {
 
     void BitwiseInlcusiveOrExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
     {
-        if (type == TypeSpecifier::INT)
+        if (type == TypeSpecifier::INT || type == TypeSpecifier::CHAR)
         {
             lhs_->EmitRISC(stream, context, "a4", type);
             stream << "addi sp, sp, -4" << std::endl;
@@ -49,7 +49,7 @@ namespace ast {
 
     void BitwiseExclusiveOrExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier type) const
     {
-        if (type == TypeSpecifier::INT)
+        if (type == TypeSpecifier::INT || type == TypeSpecifier::CHAR)
         {
             lhs_->EmitRISC(stream, context, "a4", type);
             stream << "addi sp, sp, -4" << std::endl;

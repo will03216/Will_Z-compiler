@@ -32,7 +32,10 @@ void AddExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context , 
         {
             stream << "slli a5, a5, 3" << std::endl;
         }
-        //stream << "neg a5, a5" << std::endl;
+        else if (lhs_type == TypeSpecifier::CHAR)
+        {
+            stream << "slli a5, a5, 0" << std::endl;
+        }
         stream << "add "<< destReg <<",a4,a5" << std::endl;
         return;
     }
@@ -52,7 +55,10 @@ void AddExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context , 
         {
             stream << "slli a4, a4, 3" << std::endl;
         }
-        //stream << "neg a4, a4" << std::endl;
+        else if (lhs_type == TypeSpecifier::CHAR)
+        {
+            stream << "slli a4, a4, 0" << std::endl;
+        }
         stream << "add "<< destReg <<",a4,a5" << std::endl;
         return;
     }
@@ -79,7 +85,7 @@ void AddExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context , 
         stream << "fadd.d f"<< destReg <<",fa4,fa5" << std::endl;
         return;
     }
-    else if (result_type == TypeSpecifier::INT)
+    else if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
     {
         lhs_->EmitRISC(stream, context, "a4", result_type);
         stream << "addi sp, sp, -4" << std::endl;
@@ -103,7 +109,6 @@ void AddExpr::Print(std::ostream& stream) const
 
 void SubExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, std::string destReg, TypeSpecifier ) const
 {
-
     {
         TypeSpecifier lhs_type = lhs_->GetType(context);
         TypeSpecifier rhs_type = rhs_->GetType(context);
@@ -130,6 +135,11 @@ void SubExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
             {
                 stream << "srli "<< destReg <<","<< destReg <<",3" << std::endl;
             }
+            else if (lhs_type == TypeSpecifier::CHAR)
+            {
+                //can remove these
+                stream << "srli "<< destReg <<","<< destReg <<",0" << std::endl;
+            }
             return;
         }
         else if (isPointer_left == 1)
@@ -147,6 +157,10 @@ void SubExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
             else if (lhs_type == TypeSpecifier::DOUBLE)
             {
                 stream << "slli a5, a5, 3" << std::endl;
+            }
+            else if (lhs_type == TypeSpecifier::CHAR)
+            {
+                stream << "slli a5, a5, 0" << std::endl;
             }
             stream << "sub "<< destReg <<",a4,a5" << std::endl;
             return;
@@ -167,7 +181,10 @@ void SubExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
             {
                 stream << "slli a4, a4, 3" << std::endl;
             }
-            //stream << "neg a4, a4" << std::endl;
+            else if (lhs_type == TypeSpecifier::CHAR)
+            {
+                stream << "slli a4, a4, 0" << std::endl;
+            }
             stream << "sub "<< destReg <<",a4,a5" << std::endl;
             return;
         }
@@ -194,7 +211,7 @@ void SubExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
             stream << "fsub.d f"<< destReg <<",fa4,fa5" << std::endl;
             return;
         }
-        else if (result_type == TypeSpecifier::INT)
+        else if (result_type == TypeSpecifier::INT|| result_type == TypeSpecifier::CHAR)
         {
             lhs_->EmitRISC(stream, context, "a4", result_type);
             stream << "addi sp, sp, -4" << std::endl;
@@ -245,7 +262,7 @@ void MulExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
         stream << "fmul.d f"<< destReg <<",fa4,fa5" << std::endl;
         return;
     }
-    else if (result_type == TypeSpecifier::INT)
+    else if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
     {
         lhs_->EmitRISC(stream, context, "a4", result_type);
         stream << "addi sp, sp, -4" << std::endl;
@@ -295,7 +312,7 @@ void DivExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
         stream << "fdiv.d f"<< destReg <<",fa4,fa5" << std::endl;
         return;
     }
-    else if (result_type == TypeSpecifier::INT)
+    else if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
     {
         lhs_->EmitRISC(stream, context, "a4", result_type);
         stream << "addi sp, sp, -4" << std::endl;
@@ -323,7 +340,7 @@ void ModExpr::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, s
     TypeSpecifier rhs_type = rhs_->GetType(context);
     TypeSpecifier result_type = CalculateType(lhs_type, rhs_type);
 
-    if (result_type == TypeSpecifier::INT)
+    if (result_type == TypeSpecifier::INT || result_type == TypeSpecifier::CHAR)
     {
         lhs_->EmitRISC(stream, context, "a4", result_type);
         stream << "addi sp, sp, -4" << std::endl;
@@ -394,7 +411,7 @@ void Negation::EmitRISC(std::ostream& stream, std::shared_ptr<Context> context, 
         stream << "fneg.d f"<< destReg <<",f"<< destReg <<"" << std::endl;
         return;
     }
-    else if (type == TypeSpecifier::INT)
+    else if (type == TypeSpecifier::INT || type == TypeSpecifier::CHAR)
     {
         expression_->EmitRISC(stream, context, destReg, type);
         stream << "neg "<< destReg <<","<< destReg <<"" << std::endl;

@@ -46,6 +46,11 @@ namespace ast {
             stream << "fmv.d fa" << index_float << ", f" << destReg << std::endl;
             index_float++;
         }
+        else if (type == TypeSpecifier::CHAR)
+        {
+            stream << "mv a" << index_int << ", " << destReg << std::endl;
+            index_int++;
+        }
         else
         {
             throw std::runtime_error("Unexpected type specifier");

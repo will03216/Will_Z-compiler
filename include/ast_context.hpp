@@ -100,9 +100,9 @@ public:
         }
     }
 
-    void AddFunction(const std::string& name, const TypeSpecifier& return_type, const std::vector<TypeSpecifier>& parameters)
+    void AddFunction(const std::string& name, const TypeSpecifier& return_type, const std::vector<TypeSpecifier>& parameters, int is_pointer)
     {
-        function_table_.AddFunction(name, return_type, parameters);
+        function_table_.AddFunction(name, return_type, parameters, is_pointer);
     }
 
     void SetCurrentFunction(const std::string& name)

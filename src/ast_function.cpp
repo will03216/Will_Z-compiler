@@ -7,11 +7,12 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context>
 {
     if ( compound_statement_ == nullptr)
     {
-        context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes(context));
+        context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes(context), declarator_->IsPointer(context));
         return;
     }
 
-    context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes(context));
+    context->AddFunction(declarator_->GetIdentifier(), declaration_specifiers_, declarator_->GetTypes(context), declarator_->IsPointer(context));
+
     context->SetCurrentFunction(declarator_->GetIdentifier());
 
     TypeSpecifier type = declaration_specifiers_;
@@ -43,6 +44,12 @@ void FunctionDefinition::EmitRISC(std::ostream& stream, std::shared_ptr<Context>
     {
         std::string reg = "a5";
         compound_statement_->EmitRISC(stream, function_context, reg, type);
+    }
+
+    if (type == TypeSpecifier::VOID)
+    {
+        exit_scope(stream);
+        stream << "ret" << std::endl;
     }
 
 }
